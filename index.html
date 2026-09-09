@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة البشمهندس خالد للتوريدات العمومية</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header" id="clientNav">
+        <div class="nav-container">
+            <div class="brand-logo">
+                <div class="logo-icon">🏗️</div>
+                <div class="logo-text">
+                    <span class="company-name">مؤسسة خالد للتوريدات</span>
+                    <span class="company-sub">ل للمقاولات ومواد البناء</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-link active" onclick="showSection('prices-section', this)">🧱 كتالوج الطوب والمشال للمحافظات</button>
+                <button class="nav-link" onclick="showSection('request-section', this)">📝 طلب توريد للموقع</button>
+                <button class="nav-link" onclick="showSection('location-section', this)">📍 مقر الشركة (GPS)</button>
+            </nav>
+            <button class="btn-portal-access" onclick="openAdminModal()">لوحة الإدارة والمحاسب 🔒</button>
+        </div>
+    </header>
+
+    <header class="main-header admin-header" id="adminNav" style="display: none;">
+        <div class="nav-container">
+            <div class="brand-logo">
+                <div class="logo-icon">⚙️</div>
+                <div class="logo-text">
+                    <span class="company-name">لوحة التحكم والسيطرة</span>
+                    <span class="company-sub">إدارة المبيعات والأسعار والمشال</span>
+                </div>
+            </div>
+            <nav class="nav-menu admin-tabs">
+                <button class="nav-link active" onclick="showAdminTab('tab-bricks', this)">📦 إدارة الطوب والأسعار</button>
+                <button class="nav-link" onclick="showAdminTab('tab-freight', this)">🚚 أسعار المشال والمحافظات</button>
+                <button class="nav-link" onclick="showAdminTab('tab-drivers', this)">🚛 حركة السائقين</button>
+                <button class="nav-link" onclick="showAdminTab('tab-finance', this)">📊 الحسابات والمالية</button>
+                <button class="nav-link" onclick="showAdminTab('tab-settings', this)">🔐 إعدادات الحساب</button>
+            </nav>
+            <div class="admin-actions">
+                <button class="btn-preview" onclick="logoutAdmin()">معاينة كمهندس 👁️</button>
+                <button class="btn-logout" onclick="logoutAdmin()">خروج 🚪</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+
+        <div id="clientPortal">
+            
+            <section id="prices-section" class="portal-page active-page">
+                <div class="section-header">
+                    <h2>كتالوج أسعار الطوب ومشال المحافظات المصرية الـ 27</h2>
+                    <p>المقاسات القياسية المعتمدة وأسعار اليوم شاملة تكلفة المشال والنقل لكافة محافظات الجمهورية</p>
+                </div>
+
+                <div class="brick-catalog-grid" id="pricesDisplayGrid"></div>
+
+                <div class="media-section">
+                    <h3>🎬 معرض المعاينة الميدانية وفيديوهات الموقع</h3>
+                    <div class="media-placeholder-box">
+                        <p>📌 **مكان مخصص للفيديوهات والصور الخاص بشركتك:**</p>
+                        <span>(لتفعيل هذا الجزء: قم بإضافة روابط فيديوهاتك أو صورك هنا)</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="request-section" class="portal-page">
+                <div class="section-header">
+                    <h2>تقديم طلب توريد طوب للموقع</h2>
+                    <p>اختر المحافظة لتطبيق سعر المشال والنقل المناسب وسيتم تحويل الطلب فوراً للمحاسب والسائقين</p>
+                </div>
+
+                <div class="custom-card">
+                    <form id="clientOrderForm" class="form-grid">
+                        <div class="form-group">
+                            <label>اسم المهندس / العميل</label>
+                            <input type="text" id="reqName" placeholder="أحمد علي" required>
+                        </div>
+                        <div class="form-group">
+                            <label>رقم التليفون / الواتساب</label>
+                            <input type="tel" id="reqPhone" placeholder="010xxxxxxx" required>
+                        </div>
+                        <div class="form-group">
+                            <label>نوع الطوب المطلوب</label>
+                            <select id="reqType" onchange="calculateOrderTotal()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>الكمية المطلوب توريدها (عدد الطوب)</label>
+                            <input type="number" id="reqQty" placeholder="مثال: 10000" oninput="calculateOrderTotal()" required>
+                        </div>
+                        <div class="form-group">
+                            <label>محافظة التوريد (حساب سعر المشال)</label>
+                            <select id="reqGovernorate" onchange="calculateOrderTotal()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>الإجمالي التقديري للطلب (شامل الطوب والمشال)</label>
+                            <input type="text" id="estimatedPrice" value="0 ج.م" readonly class="highlight-input">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>العنوان التفصيلي ومكان التوريد بالموقع</label>
+                            <input type="text" id="reqAddress" placeholder="مثال: شارع النهضة - الموقع بجوار..." required>
+                        </div>
+                        <button type="submit" class="btn-submit">تأكيد وإرسال الطلب للمكتب 🚀</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="location-section" class="portal-page">
+                <div class="section-header">
+                    <h2>مقر المكتب الرئيسي (GPS)</h2>
+                    <p>يشرفنا حضوركم بمقر الشركة لمتابعة العقود والتوريدات</p>
+                </div>
+                <div class="custom-card">
+                    <iframe src="https://maps.google.com/maps?q=29.849917,31.282222&z=15&output=embed" width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </section>
+
+        </div>
+
+        <div id="adminAuthModal" class="modal-overlay" style="display: none;">
+            <div class="modal-card">
+                <h3>دخول لوحة المحاسب والإدارة 🔒</h3>
+                <p>أدخل بيانات الحساب للوصول إلى النظام</p>
+                <form id="loginForm">
+                    <input type="text" id="loginUsername" placeholder="اسم المستخدم" required>
+                    <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-submit">تسجيل الدخول</button>
+                        <button type="button" class="btn-cancel" onclick="closeAdminModal()">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="adminPortal" style="display: none;">
+
+            <div id="tab-bricks" class="admin-tab-content active-tab">
+                <div class="custom-card">
+                    <h3>➕ إضافة نوع طوب جديد تماماً للكتالوج</h3>
+                    <form id="addNewBrickForm" class="form-grid">
+                        <div class="form-group">
+                            <label>اسم نوع الطوب</label>
+                            <input type="text" id="newBrickName" placeholder="مثال: طوب رملي وردي" required>
+                        </div>
+                        <div class="form-group">
+                            <label>السعر الأساسي (لكل 1000 طوبة)</label>
+                            <input type="number" id="newBrickPrice" placeholder="مثال: 7000" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>المقاس القياسي</label>
+                            <input type="text" id="newBrickSize" placeholder="مثال: 25×12×6 سم">
+                        </div>
+                        <button type="submit" class="btn-submit" style="background:#10b981; color:#fff;">إضافة الطوب للكتالوج فوراً ➕</button>
+                    </form>
+                </div>
+
+                <div class="custom-card">
+                    <h3>🛠️ تعديل الأسعار والمواصفات أو حذف الأنواع</h3>
+                    <div id="adminPriceControls" class="form-grid"></div>
+                </div>
+            </div>
+
+            <div id="tab-freight" class="admin-tab-content">
+                <div class="custom-card">
+                    <h3>🚚 تحكم في أسعار المشال والنقل لمافظات مصر</h3>
+                    <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">يمكنك تعديل سعر المشال والنقل لكل ألف طوبة لأي محافظة وسيتحدث فوراً للعملاء.</p>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>المحافظة</th>
+                                    <th>سعر المشال / النقل (لكل ألف طوبة)</th>
+                                    <th>إجراء التعديل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminFreightTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-drivers" class="admin-tab-content">
+                <div class="custom-card">
+                    <h3>🚛 إدارة شحنات السيارات وتعيين السائقين</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم الأوردر</th>
+                                    <th>اسم المهندس / الموقع</th>
+                                    <th>نوع الطوب والكمية والمحافظة</th>
+                                    <th>العنوان التفصيلي</th>
+                                    <th>اسم السائق / رقم السيارة</th>
+                                    <th>حالة الشحنة</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminDriversTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-finance" class="admin-tab-content">
+                <div class="custom-card">
+                    <h3>📊 شيت المبيعات والحسابات الإجمالية</h3>
+                    <div class="finance-summary-grid">
+                        <div class="finance-card">
+                            <span>إجمالي الطلبات</span>
+                            <h4 id="totalOrdersCount">0</h4>
+                        </div>
+                        <div class="finance-card highlight">
+                            <span>إجمالي المبيعات المتوقعة</span>
+                            <h4 id="totalRevenue">0 ج.م</h4>
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 20px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الأوردر</th>
+                                    <th>العميل والتليفون</th>
+                                    <th>التفاصيل والمحافظة</th>
+                                    <th>المبلغ الإجمالي</th>
+                                    <th>حالة الدفع والتوصيل</th>
+                                    <th>إلغاء / مسح</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminFinanceTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="admin-tab-content">
+                <div class="custom-card">
+                    <h3>🔐 تغيير كلمة المرور</h3>
+                    <form id="changePasswordForm" class="form-grid" style="max-width: 500px;">
+                        <div class="form-group full-width">
+                            <label for="currentPassword">كلمة المرور الحالية:</label>
+                            <input type="password" id="currentPassword" placeholder="أدخل كلمة المرور الحالية" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="newPassword">كلمة المرور الجديدة:</label>
+                            <input type="password" id="newPassword" placeholder="أدخل كلمة المرور الجديدة" required>
+                        </div>
+                        <button type="submit" class="btn-submit">تغيير كلمة المرور 🔑</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>
