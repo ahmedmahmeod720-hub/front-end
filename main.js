@@ -1,4 +1,8 @@
+// ==========================================
+// 1. الإعدادات والبيانات الأولية (العمار مصر)
+// ==========================================
 const API_URL = 'https://backend-y8ft.onrender.com';
+const WHATSAPP_NUMBER = "201000000000"; // 👈 ضع رقم الواتساب الخاص بك هنا بالرمز الدولي (مثال: 201012345678)
 
 const initialBricks = {
     "طوب طفلي مفرغ": { price: 1400, size: "24×11×6 سم" },
@@ -17,6 +21,9 @@ const initialGovernorates = {
     "البحر الأحمر": 1400, "شمال سيناء": 1500, "جنوب سيناء": 1600
 };
 
+// ==========================================
+// 2. إدارة التنبيهات (Toast Messages)
+// ==========================================
 function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -37,6 +44,9 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// ==========================================
+// 3. تخزين واسترجاع البيانات محلياً (LocalStorage)
+// ==========================================
 function getStoredBricks() {
     const data = localStorage.getItem("company_bricks");
     return data ? JSON.parse(data) : initialBricks;
@@ -67,6 +77,9 @@ function saveOrdersData(orders) {
     renderAllViews();
 }
 
+// ==========================================
+// 4. تهيئة الصفحة عند التحميل
+// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     if (!localStorage.getItem("company_bricks")) {
         localStorage.setItem("company_bricks", JSON.stringify(initialBricks));
@@ -75,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("company_governorates", JSON.stringify(initialGovernorates));
     }
     
-    // التحقق من وجود توكن سابق
+    // التحقق من تسجيل الدخول السابق للإدارة
     if (localStorage.getItem('adminToken')) {
         showAdminDashboard();
     }
@@ -90,17 +103,22 @@ function renderAllViews() {
     renderAdminTables();
 }
 
+// ==========================================
+// 5. التنقل بين الصفحات والتبويبات
+// ==========================================
 function showSection(sectionId, btn) {
     document.querySelectorAll(".portal-page").forEach(page => page.classList.remove("active-page"));
     document.querySelectorAll("#clientNav .nav-link").forEach(b => b.classList.remove("active"));
-    document.getElementById(sectionId).classList.add("active-page");
+    const targetSection = document.getElementById(sectionId);
+    if(targetSection) targetSection.classList.add("active-page");
     if(btn) btn.classList.add("active");
 }
 
 function showAdminTab(tabId, btn) {
     document.querySelectorAll(".admin-tab-content").forEach(tab => tab.classList.remove("active-tab"));
     document.querySelectorAll(".admin-tabs .nav-link").forEach(b => b.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active-tab");
+    const targetTab = document.getElementById(tabId);
+    if(targetTab) targetTab.classList.add("active-tab");
     if(btn) btn.classList.add("active");
 }
 
@@ -121,9 +139,12 @@ function logoutAdmin() {
     document.getElementById("adminNav").style.display = "none";
     document.getElementById("clientPortal").style.display = "block";
     document.getElementById("clientNav").style.display = "flex";
-    showToast("تم الخروج ومعاينة الموقع كمهندس 👁️");
+    showToast("تم الخروج ومعاينة الموقع كعميل 👁️");
 }
 
+// ==========================================
+// 6. عرض الكتالوج والحاسبة التفاعلية
+// ==========================================
 function renderClientCatalogUI() {
     const bricks = getStoredBricks();
     const govs = getStoredGovernorates();
@@ -193,31 +214,62 @@ function calculateOrderTotal() {
     estPriceEl.value = grandTotal.toLocaleString() + " ج.م (شامل المشال)";
 }
 
+// ==========================================
+// 7. إرسال الطلب وتحويله المباشر للواتساب
+// ==========================================
 document.getElementById("clientOrderForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const orders = getStoredOrders();
 
+    const name = document.getElementById("reqName").value;
+    const phone = document.getElementById("reqPhone").value;
+    const type = document.getElementById("reqType").value;
+    const qty = document.getElementById("reqQty").value;
+    const governorate = document.getElementById("reqGovernorate").value;
+    const total = document.getElementById("estimatedPrice").value;
+    const address = document.getElementById("reqAddress").value;
+
     const newOrder = {
         id: Math.floor(10000 + Math.random() * 90000),
-        name: document.getElementById("reqName").value,
-        phone: document.getElementById("reqPhone").value,
-        type: document.getElementById("reqType").value,
-        qty: document.getElementById("reqQty").value,
-        governorate: document.getElementById("reqGovernorate").value,
-        total: document.getElementById("estimatedPrice").value,
-        address: document.getElementById("reqAddress").value,
+        name,
+        phone,
+        type,
+        qty,
+        governorate,
+        total,
+        address,
         driver: "لم يحدد بعد",
         status: "قيد الانتظار"
     };
 
+    // حفظ الطلب محلياً في شيت المبيعات
     orders.unshift(newOrder);
     saveOrdersData(orders);
 
-    showToast(`تم إرسال الطلب بنجاح برقم #${newOrder.id}! 🎉`);
+    // تجهيز نص رسالة الواتساب الاحترافية
+    const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
+        `*رقم الطلب:* #${newOrder.id}%0A` +
+        `*اسم العميل:* ${name}%0A` +
+        `*رقم التليفون:* ${phone}%0A` +
+        `*نوع الطوب:* ${type}%0A` +
+        `*الكمية المطلوبة:* ${qty} طوبة%0A` +
+        `*المحافظة:* ${governorate}%0A` +
+        `*العنوان التفصيلي:* ${address}%0A` +
+        `*الإجمالي التقديري:* ${total}%0A%0A` +
+        `يرجى تأكيد الطلب والمتابعة معك!`;
+
+    // توجيه المستخدم لتطبيق الواتساب مباشرة
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+
+    showToast(`تم إرسال الطلب برقم #${newOrder.id} وجاري التحويل للواتساب! 🚀`);
     e.target.reset();
     calculateOrderTotal();
 });
 
+// ==========================================
+// 8. لوحة التحكم - إضافة وتعديل الطوب
+// ==========================================
 document.getElementById("addNewBrickForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const bricks = getStoredBricks();
@@ -276,6 +328,9 @@ function deleteBrick(type) {
     showToast(`تم حذف (${type}) من الكتالوج 🗑️`, "error");
 }
 
+// ==========================================
+// 9. لوحة التحكم - تعديل المشال والمحافظات
+// ==========================================
 function renderAdminFreightControls() {
     const govs = getStoredGovernorates();
     const tbody = document.getElementById("adminFreightTableBody");
@@ -307,6 +362,9 @@ function updateGovFreight(gov) {
     }
 }
 
+// ==========================================
+// 10. لوحة التحكم - الجداول والمالية والسائقين
+// ==========================================
 function renderAdminTables() {
     const orders = getStoredOrders();
     const driversBody = document.getElementById("adminDriversTableBody");
@@ -381,16 +439,15 @@ function deleteOrder(index) {
     showToast("تم مسح الطلب بنجاح", "error");
 }
 
-// === تسجيل دخول محلي مباشر وبديل سريع للباك إند ===
-
-// 1. تسجيل الدخول Direct
+// ==========================================
+// 11. تسجيل الدخول وتغيير كلمة المرور
+// ==========================================
 document.getElementById('loginForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
 
-    // فحص مباشر للحساب
     if (username === 'admin' && password === '123456') {
         localStorage.setItem('adminToken', 'local_admin_session_token');
         showToast('تم تسجيل الدخول بنجاح! ✨');
@@ -400,7 +457,6 @@ document.getElementById('loginForm')?.addEventListener('submit', (e) => {
     }
 });
 
-// 2. تغيير كلمة المرور
 document.getElementById('changePasswordForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     showToast('تم حفظ كلمة المرور الجديدة بنجاح ✨');
