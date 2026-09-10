@@ -1,41 +1,16 @@
-// ==========================================
-// 1. الإعدادات والبيانات الأولية (العمار مصر)
-// ==========================================
 const API_URL = 'https://backend-y8ft.onrender.com';
-const WHATSAPP_NUMBER = "201143348433"; // 👈 ضع رقم الواتساب الخاص بك هنا بالرمز الدولي (مثال: 201012345678)
 
-const initialBricks = {
-    "طوب طفلي مفرغ": { price: 1400, size: "24×11×6 سم" },
-    "طوب طفلي مصمت": { price: 1600, size: "25×12×6 سم" },
-    "طوب أسمنتي مصمت": { price: 2100, size: "25×12×6 سم" },
-    "بلوك أسمنتي مفرغ": { price: 3200, size: "40×20×20 سم" }
-};
+const WHATSAPP_NUMBER = "201143348433";
 
-const initialGovernorates = {
-    "القاهرة": 500, "الجيزة": 500, "الإسكندرية": 800, "القليوبية": 450,
-    "الدقهلية": 700, "الغربية": 650, "المنوفية": 600, "الشرقية": 600,
-    "البحيرة": 750, "كفر الشيخ": 750, "دمياط": 800, "بورسعيد": 850,
-    "الإسماعيلية": 750, "السويس": 800, "الفيوم": 700, "بني سويف": 800,
-    "المنيا": 1000, "أسيوط": 1200, "سوهاج": 1300, "قنا": 1400,
-    "الأقصر": 1500, "أسوان": 1600, "مطروح": 1200, "الوادي الجديد": 1700,
-    "البحر الأحمر": 1400, "شمال سيناء": 1500, "جنوب سيناء": 1600
-};
+let currentBricks = {};
+let currentGovs = {};
 
-// ==========================================
-// 2. إدارة التنبيهات (Toast Messages)
-// ==========================================
+// 1. Toast
 function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        document.body.appendChild(container);
-    }
-
     const toast = document.createElement('div');
     toast.className = `custom-toast ${type}`;
     toast.innerText = message;
-
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('show'), 100);
     setTimeout(() => {
@@ -44,82 +19,29 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// ==========================================
-// 3. تخزين واسترجاع البيانات محلياً (LocalStorage)
-// ==========================================
-function getStoredBricks() {
-    const data = localStorage.getItem("company_bricks");
-    return data ? JSON.parse(data) : initialBricks;
+// 2. معاينة صور الشهادات
+function openCertModal(src) {
+    document.getElementById("certModal").style.display = "flex";
+    document.getElementById("imgModalTarget").src = src;
 }
 
-function saveBricksData(bricks) {
-    localStorage.setItem("company_bricks", JSON.stringify(bricks));
-    renderAllViews();
+function closeCertModal() {
+    document.getElementById("certModal").style.display = "none";
 }
 
-function getStoredGovernorates() {
-    const data = localStorage.getItem("company_governorates");
-    return data ? JSON.parse(data) : initialGovernorates;
-}
-
-function saveGovernoratesData(govs) {
-    localStorage.setItem("company_governorates", JSON.stringify(govs));
-    renderAllViews();
-}
-
-function getStoredOrders() {
-    const data = localStorage.getItem("company_orders");
-    return data ? JSON.parse(data) : [];
-}
-
-function saveOrdersData(orders) {
-    localStorage.setItem("company_orders", JSON.stringify(orders));
-    renderAllViews();
-}
-
-// ==========================================
-// 4. تهيئة الصفحة عند التحميل
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    if (!localStorage.getItem("company_bricks")) {
-        localStorage.setItem("company_bricks", JSON.stringify(initialBricks));
-    }
-    if (!localStorage.getItem("company_governorates")) {
-        localStorage.setItem("company_governorates", JSON.stringify(initialGovernorates));
-    }
-    
-    // التحقق من تسجيل الدخول السابق للإدارة
-    if (localStorage.getItem('adminToken')) {
-        showAdminDashboard();
-    }
-    
-    renderAllViews();
-});
-
-function renderAllViews() {
-    renderClientCatalogUI();
-    renderAdminPriceControls();
-    renderAdminFreightControls();
-    renderAdminTables();
-}
-
-// ==========================================
-// 5. التنقل بين الصفحات والتبويبات
-// ==========================================
+// 3. التنقل والصفحات
 function showSection(sectionId, btn) {
-    document.querySelectorAll(".portal-page").forEach(page => page.classList.remove("active-page"));
+    document.querySelectorAll(".portal-page").forEach(p => p.classList.remove("active-page"));
     document.querySelectorAll("#clientNav .nav-link").forEach(b => b.classList.remove("active"));
-    const targetSection = document.getElementById(sectionId);
-    if(targetSection) targetSection.classList.add("active-page");
-    if(btn) btn.classList.add("active");
+    document.getElementById(sectionId)?.classList.add("active-page");
+    btn?.classList.add("active");
 }
 
 function showAdminTab(tabId, btn) {
-    document.querySelectorAll(".admin-tab-content").forEach(tab => tab.classList.remove("active-tab"));
-    document.querySelectorAll(".admin-tabs .nav-link").forEach(b => b.classList.remove("active"));
-    const targetTab = document.getElementById(tabId);
-    if(targetTab) targetTab.classList.add("active-tab");
-    if(btn) btn.classList.add("active");
+    document.querySelectorAll(".admin-tab-content").forEach(t => t.classList.remove("active-tab"));
+    document.querySelectorAll("#adminNav .nav-link").forEach(b => b.classList.remove("active"));
+    document.getElementById(tabId)?.classList.add("active-tab");
+    btn?.classList.add("active");
 }
 
 function openAdminModal() { document.getElementById("adminAuthModal").style.display = "flex"; }
@@ -131,6 +53,7 @@ function showAdminDashboard() {
     document.getElementById("clientNav").style.display = "none";
     document.getElementById("adminPortal").style.display = "block";
     document.getElementById("adminNav").style.display = "flex";
+    loadAdminData();
 }
 
 function logoutAdmin() {
@@ -139,326 +62,256 @@ function logoutAdmin() {
     document.getElementById("adminNav").style.display = "none";
     document.getElementById("clientPortal").style.display = "block";
     document.getElementById("clientNav").style.display = "flex";
-    showToast("تم الخروج ومعاينة الموقع كعميل 👁️");
+    showToast("تم الخروج للواجهة العامة 👁️");
 }
 
-// ==========================================
-// 6. عرض الكتالوج والحاسبة التفاعلية
-// ==========================================
-function renderClientCatalogUI() {
-    const bricks = getStoredBricks();
-    const govs = getStoredGovernorates();
+// 4. جلب البيانات من السيرفر المباشر
+document.addEventListener("DOMContentLoaded", () => {
+    fetchData();
+    if(localStorage.getItem('adminToken')) showAdminDashboard();
+});
 
+async function fetchData() {
+    try {
+        const [resB, resG] = await Promise.all([
+            fetch(`${API_URL}/bricks`),
+            fetch(`${API_URL}/governorates`)
+        ]);
+        
+        const bricksArr = await resB.json();
+        const govsArr = await resG.json();
+
+        currentBricks = {};
+        bricksArr.forEach(b => currentBricks[b.name] = { price: b.price, size: b.size });
+
+        currentGovs = {};
+        govsArr.forEach(g => currentGovs[g.name] = g.freight);
+
+        renderClientViews();
+    } catch (err) {
+        showToast("خطأ في الاتصال بالسيرفر", "error");
+    }
+}
+
+function renderClientViews() {
     const grid = document.getElementById("pricesDisplayGrid");
     const typeSelect = document.getElementById("reqType");
     const govSelect = document.getElementById("reqGovernorate");
 
-    if(!grid || !typeSelect || !govSelect) return;
+    if(!grid) return;
+    grid.innerHTML = ""; typeSelect.innerHTML = ""; govSelect.innerHTML = "";
 
-    grid.innerHTML = "";
-    typeSelect.innerHTML = "";
-    govSelect.innerHTML = "";
-
-    let govsHtmlList = "";
-    for (let gov in govs) {
-        govsHtmlList += `<div class="gov-price-row"><span>📍 ${gov}</span><span>${govs[gov]} ج.م</span></div>`;
-    }
-
-    for (let type in bricks) {
-        const item = bricks[type];
+    for (let type in currentBricks) {
+        const b = currentBricks[type];
         grid.innerHTML += `
             <div class="brick-card">
                 <h4>🧱 ${type}</h4>
-                <ul class="brick-spec-list">
-                    <li><span>المقاس القياسي:</span> <strong>${item.size || "25×12×6 سم"}</strong></li>
-                </ul>
-                <div class="price-tag-big">سعر الألف طوبة: ${item.price.toLocaleString()} ج.م</div>
-                <div class="gov-prices-box">
-                    <h5>🚚 تفاصيل أسعار المشال والنقل بالمحافظات</h5>
-                    ${govsHtmlList}
-                </div>
+                <p>المقاس القياسي: ${b.size || 'غير محدد'}</p>
+                <div class="price-tag-big">سعر الألف طوبة: ${b.price.toLocaleString()} ج.م</div>
             </div>
         `;
         typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
     }
 
-    for (let gov in govs) {
-        govSelect.innerHTML += `<option value="${gov}">${gov} (مشال: ${govs[gov]} ج.م/ألف)</option>`;
+    for (let gov in currentGovs) {
+        govSelect.innerHTML += `<option value="${gov}">${gov} (مشال: ${currentGovs[gov]} ج.م/ألف)</option>`;
     }
 
     calculateOrderTotal();
 }
 
 function calculateOrderTotal() {
-    const bricks = getStoredBricks();
-    const govs = getStoredGovernorates();
+    const type = document.getElementById("reqType")?.value;
+    const qty = parseFloat(document.getElementById("reqQty")?.value) || 0;
+    const gov = document.getElementById("reqGovernorate")?.value;
 
-    const typeEl = document.getElementById("reqType");
-    const qtyEl = document.getElementById("reqQty");
-    const govEl = document.getElementById("reqGovernorate");
-    const estPriceEl = document.getElementById("estimatedPrice");
+    const bPrice = currentBricks[type]?.price || 0;
+    const gFreight = currentGovs[gov] || 0;
 
-    if (!typeEl || !qtyEl || !govEl || !estPriceEl) return;
-
-    const type = typeEl.value;
-    const qty = parseFloat(qtyEl.value) || 0;
-    const gov = govEl.value;
-
-    const pricePerThousand = bricks[type] ? bricks[type].price : 0;
-    const freightPerThousand = govs[gov] ? govs[gov] : 0;
-
-    const brickTotal = (qty / 1000) * pricePerThousand;
-    const freightTotal = (qty / 1000) * freightPerThousand;
-    const grandTotal = brickTotal + freightTotal;
-
-    estPriceEl.value = grandTotal.toLocaleString() + " ج.م (شامل المشال)";
+    const total = (qty / 1000) * (bPrice + gFreight);
+    document.getElementById("estimatedPrice").value = total.toLocaleString() + " ج.م";
 }
 
-// ==========================================
-// 7. إرسال الطلب وتحويله المباشر للواتساب
-// ==========================================
-document.getElementById("clientOrderForm")?.addEventListener("submit", (e) => {
+// 5. إرسال الطلب عبر الواتساب وتسجيل الأوردر
+document.getElementById("clientOrderForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const orders = getStoredOrders();
-
-    const name = document.getElementById("reqName").value;
-    const phone = document.getElementById("reqPhone").value;
-    const type = document.getElementById("reqType").value;
-    const qty = document.getElementById("reqQty").value;
-    const governorate = document.getElementById("reqGovernorate").value;
-    const total = document.getElementById("estimatedPrice").value;
-    const address = document.getElementById("reqAddress").value;
-
-    const newOrder = {
-        id: Math.floor(10000 + Math.random() * 90000),
-        name,
-        phone,
-        type,
-        qty,
-        governorate,
-        total,
-        address,
-        driver: "لم يحدد بعد",
-        status: "قيد الانتظار"
+    
+    const payload = {
+        name: document.getElementById("reqName").value,
+        phone: document.getElementById("reqPhone").value,
+        type: document.getElementById("reqType").value,
+        qty: document.getElementById("reqQty").value,
+        governorate: document.getElementById("reqGovernorate").value,
+        address: document.getElementById("reqAddress").value,
+        total: document.getElementById("estimatedPrice").value
     };
 
-    // حفظ الطلب محلياً في شيت المبيعات
-    orders.unshift(newOrder);
-    saveOrdersData(orders);
+    try {
+        const res = await fetch(`${API_URL}/orders`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
 
-    // تجهيز نص رسالة الواتساب الاحترافية
-    const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
-        `*رقم الطلب:* #${newOrder.id}%0A` +
-        `*اسم العميل:* ${name}%0A` +
-        `*رقم التليفون:* ${phone}%0A` +
-        `*نوع الطوب:* ${type}%0A` +
-        `*الكمية المطلوبة:* ${qty} طوبة%0A` +
-        `*المحافظة:* ${governorate}%0A` +
-        `*العنوان التفصيلي:* ${address}%0A` +
-        `*الإجمالي التقديري:* ${total}%0A%0A` +
-        `يرجى تأكيد الطلب والمتابعة معك!`;
+        const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
+            `*أوردر رقم:* ${data.orderId}%0A` +
+            `*اسم المهندس/العميل:* ${payload.name}%0A` +
+            `*رقم التليفون:* ${payload.phone}%0A` +
+            `*نوع الطوب:* ${payload.type}%0A` +
+            `*الكمية المطلوبة:* ${payload.qty} طوبة%0A` +
+            `*المحافظة:* ${payload.governorate}%0A` +
+            `*العنوان:* ${payload.address}%0A` +
+            `*الإجمالي:* ${payload.total}%0A%0A` +
+            `يرجى التأكيد والمتابعة!`;
 
-    // توجيه المستخدم لتطبيق الواتساب مباشرة
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    window.open(whatsappUrl, '_blank');
-
-    showToast(`تم إرسال الطلب برقم #${newOrder.id} وجاري التحويل للواتساب! 🚀`);
-    e.target.reset();
-    calculateOrderTotal();
-});
-
-// ==========================================
-// 8. لوحة التحكم - إضافة وتعديل الطوب
-// ==========================================
-document.getElementById("addNewBrickForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const bricks = getStoredBricks();
-
-    const name = document.getElementById("newBrickName").value.trim();
-    const price = parseFloat(document.getElementById("newBrickPrice").value);
-    const size = document.getElementById("newBrickSize").value || "25×12×6 سم";
-
-    if (name && price) {
-        bricks[name] = { price, size };
-        saveBricksData(bricks);
-        showToast(`تمت إضافة (${name}) للكتالوج بنجاح 🧱`);
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+        showToast(`تم تسجيل أوردر رقم (${data.orderId}) بنجاح ✨`);
         e.target.reset();
+    } catch(err) {
+        showToast("عذراً، فشل إرسال الطلب", "error");
     }
 });
 
-function renderAdminPriceControls() {
-    const bricks = getStoredBricks();
-    const container = document.getElementById("adminPriceControls");
-    if (!container) return;
-    container.innerHTML = "";
-
-    for (let type in bricks) {
-        const item = bricks[type];
-        container.innerHTML += `
-            <div class="form-group full-width" style="border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
-                <label style="color:#38bdf8; font-size:15px;">🧱 ${type}</label>
-                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
-                    <input type="number" id="price_${type}" value="${item.price}" placeholder="السعر" style="width:130px;">
-                    <input type="text" id="size_${type}" value="${item.size || ''}" placeholder="المقاس" style="flex:1;">
-                    <button type="button" class="btn-submit" style="width:auto; background:#38bdf8; color:#000;" onclick="updateBrick('${type}')">حفظ التعديل 💾</button>
-                    <button type="button" class="btn-submit" style="width:auto; background:#ef4444; color:#fff;" onclick="deleteBrick('${type}')">حذف ❌</button>
+// 6. لوحة التحكم - جلب الطلبات وإدارتها
+async function loadAdminData() {
+    const token = localStorage.getItem('adminToken');
+    
+    // بناء التحكم بالأسعار
+    const pContainer = document.getElementById("adminPriceControls");
+    pContainer.innerHTML = "";
+    for(let type in currentBricks) {
+        const b = currentBricks[type];
+        pContainer.innerHTML += `
+            <div class="form-group full-width" style="margin-bottom:10px;">
+                <label style="color:var(--accent);">${type}</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="price_${type}" value="${b.price}">
+                    <input type="text" id="size_${type}" value="${b.size||''}">
+                    <button class="btn-submit" onclick="saveBrick('${type}')">حفظ 💾</button>
+                    <button class="btn-submit btn-cancel" onclick="deleteBrick('${type}')">حذف ❌</button>
                 </div>
             </div>
         `;
     }
-}
 
-function updateBrick(type) {
-    const bricks = getStoredBricks();
-    const newPrice = parseFloat(document.getElementById(`price_${type}`).value);
-    const newSize = document.getElementById(`size_${type}`).value;
-
-    if (newPrice) {
-        bricks[type].price = newPrice;
-        bricks[type].size = newSize;
-        saveBricksData(bricks);
-        showToast(`تم تحديث سعر ومواصفات (${type}) فوراً ✅`);
-    }
-}
-
-function deleteBrick(type) {
-    const bricks = getStoredBricks();
-    delete bricks[type];
-    saveBricksData(bricks);
-    showToast(`تم حذف (${type}) من الكتالوج 🗑️`, "error");
-}
-
-// ==========================================
-// 9. لوحة التحكم - تعديل المشال والمحافظات
-// ==========================================
-function renderAdminFreightControls() {
-    const govs = getStoredGovernorates();
-    const tbody = document.getElementById("adminFreightTableBody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    for (let gov in govs) {
-        tbody.innerHTML += `
+    // جدول المحافظات
+    const gBody = document.getElementById("adminFreightTableBody");
+    gBody.innerHTML = "";
+    for(let gov in currentGovs) {
+        gBody.innerHTML += `
             <tr>
-                <td><strong>📍 ${gov}</strong></td>
+                <td>${gov}</td>
+                <td><input type="number" id="gov_${gov}" value="${currentGovs[gov]}"> ج.م</td>
                 <td>
-                    <input type="number" id="freight_${gov}" value="${govs[gov]}" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:6px 10px; border-radius:6px; width:150px;"> ج.م
-                </td>
-                <td>
-                    <button type="button" onclick="updateGovFreight('${gov}')" style="background:#38bdf8; color:#000; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer;">حفظ سعر المشال 💾</button>
+                    <button class="btn-submit" onclick="saveGov('${gov}')">حفظ 💾</button>
+                    <button class="btn-submit btn-cancel" onclick="deleteGov('${gov}')">حذف ❌</button>
                 </td>
             </tr>
         `;
     }
+
+    // جدول الطلبات
+    try {
+        const res = await fetch(`${API_URL}/orders`, { headers: {'Authorization': `Bearer ${token}`} });
+        const orders = await res.json();
+        
+        const oBody = document.getElementById("adminOrdersTableBody");
+        oBody.innerHTML = "";
+        let rev = 0;
+
+        orders.forEach(o => {
+            rev += parseFloat(o.total.replace(/[^0-9.-]+/g,"")) || 0;
+            oBody.innerHTML += `
+                <tr>
+                    <td><strong>أوردر ${o.id}</strong></td>
+                    <td>${o.name}</td>
+                    <td>${o.phone}</td>
+                    <td>${o.type} (${o.qty})</td>
+                    <td>${o.governorate} - ${o.address}</td>
+                    <td>${o.total}</td>
+                    <td>${o.status}</td>
+                    <td><button class="btn-submit btn-cancel" onclick="deleteOrder(${o.id})">حذف</button></td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("totalOrdersCount").innerText = orders.length;
+        document.getElementById("totalRevenue").innerText = rev.toLocaleString() + " ج.م";
+    } catch(err) {}
 }
 
-function updateGovFreight(gov) {
-    const govs = getStoredGovernorates();
-    const newPrice = parseFloat(document.getElementById(`freight_${gov}`).value);
-    if (!isNaN(newPrice)) {
-        govs[gov] = newPrice;
-        saveGovernoratesData(govs);
-        showToast(`تم تحديث سعر المشال لمحافظة (${gov}) بنجاح 🚚`);
-    }
-}
-
-// ==========================================
-// 10. لوحة التحكم - الجداول والمالية والسائقين
-// ==========================================
-function renderAdminTables() {
-    const orders = getStoredOrders();
-    const driversBody = document.getElementById("adminDriversTableBody");
-    const financeBody = document.getElementById("adminFinanceTableBody");
-
-    if (!driversBody || !financeBody) return;
-
-    driversBody.innerHTML = "";
-    financeBody.innerHTML = "";
-
-    let totalRev = 0;
-
-    orders.forEach((ord, index) => {
-        const numPrice = parseFloat(ord.total.replace(/[^0-9.-]+/g,"")) || 0;
-        totalRev += numPrice;
-
-        driversBody.innerHTML += `
-            <tr>
-                <td><strong>#${ord.id}</strong></td>
-                <td>${ord.name}</td>
-                <td>${ord.type} (${ord.qty} طوبة)<br><small style="color:#38bdf8;">محافظة: ${ord.governorate}</small></td>
-                <td>${ord.address}</td>
-                <td><input type="text" value="${ord.driver}" onchange="updateDriver(${index}, this.value)" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:4px; border-radius:4px; width:130px;"></td>
-                <td>
-                    <select onchange="updateStatus(${index}, this.value)" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.1); padding:4px; border-radius:4px;">
-                        <option value="قيد الانتظار" ${ord.status==='قيد الانتظار'?'selected':''}>قيد الانتظار</option>
-                        <option value="في الطريق" ${ord.status==='في الطريق'?'selected':''}>في الطريق</option>
-                        <option value="تم التوصيل" ${ord.status==='تم التوصيل'?'selected':''}>تم التوصيل</option>
-                    </select>
-                </td>
-                <td><button onclick="deleteOrder(${index})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">مسح</button></td>
-            </tr>
-        `;
-
-        financeBody.innerHTML += `
-            <tr>
-                <td>#${ord.id}</td>
-                <td><strong>${ord.name}</strong><br><small>${ord.phone}</small></td>
-                <td>${ord.type} - ${ord.qty} طوبة<br><small style="color:#38bdf8;">(${ord.governorate})</small></td>
-                <td style="color:#10b981; font-weight:800;">${ord.total}</td>
-                <td><span style="background:rgba(56, 189, 248, 0.1); color:#38bdf8; padding:2px 8px; border-radius:4px;">${ord.status}</span></td>
-                <td><button onclick="deleteOrder(${index})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">مسح</button></td>
-            </tr>
-        `;
+async function saveBrick(name) {
+    const price = document.getElementById(`price_${name}`).value;
+    const size = document.getElementById(`size_${name}`).value;
+    await fetch(`${API_URL}/bricks`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('adminToken')}`},
+        body: JSON.stringify({ name, price, size })
     });
-
-    const totalOrdersCount = document.getElementById("totalOrdersCount");
-    const totalRevenue = document.getElementById("totalRevenue");
-
-    if(totalOrdersCount) totalOrdersCount.innerText = orders.length;
-    if(totalRevenue) totalRevenue.innerText = totalRev.toLocaleString() + " ج.م";
+    showToast("تم الحفظ وتعديل السيرفر المباشر ✅");
+    fetchData();
 }
 
-function updateDriver(index, val) {
-    const orders = getStoredOrders();
-    orders[index].driver = val;
-    saveOrdersData(orders);
-    showToast("تم تعيين السائق بنجاح 🚛");
+async function deleteBrick(name) {
+    await fetch(`${API_URL}/bricks/${name}`, {
+        method: 'DELETE',
+        headers: {'Authorization': `Bearer ${localStorage.getItem('adminToken')}`}
+    });
+    showToast("تم الحذف بنجاح", "error");
+    fetchData();
 }
 
-function updateStatus(index, val) {
-    const orders = getStoredOrders();
-    orders[index].status = val;
-    saveOrdersData(orders);
-    showToast("تم تحديث حالة الشحنة 🔄");
+async function saveGov(name) {
+    const freight = document.getElementById(`gov_${name}`).value;
+    await fetch(`${API_URL}/governorates`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('adminToken')}`},
+        body: JSON.stringify({ name, freight })
+    });
+    showToast("تم تحديث المشال ✅");
+    fetchData();
 }
 
-function deleteOrder(index) {
-    const orders = getStoredOrders();
-    orders.splice(index, 1);
-    saveOrdersData(orders);
-    showToast("تم مسح الطلب بنجاح", "error");
+async function deleteGov(name) {
+    await fetch(`${API_URL}/governorates/${name}`, {
+        method: 'DELETE',
+        headers: {'Authorization': `Bearer ${localStorage.getItem('adminToken')}`}
+    });
+    showToast("تم حذف المحافظة", "error");
+    fetchData();
 }
 
-// ==========================================
-// 11. تسجيل الدخول وتغيير كلمة المرور
-// ==========================================
-document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+async function deleteOrder(id) {
+    await fetch(`${API_URL}/orders/${id}`, {
+        method: 'DELETE',
+        headers: {'Authorization': `Bearer ${localStorage.getItem('adminToken')}`}
+    });
+    showToast("تم حذف الأوردر", "error");
+    loadAdminData();
+}
+
+// تسجيل الدخول والإعدادات
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const u = document.getElementById('loginUsername').value;
+    const p = document.getElementById('loginPassword').value;
 
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
-
-    if (username === 'admin' && password === '123456') {
-        localStorage.setItem('adminToken', 'local_admin_session_token');
-        showToast('تم تسجيل الدخول بنجاح! ✨');
-        showAdminDashboard();
-    } else {
-        showToast('اسم المستخدم أو كلمة المرور غير صحيحة', 'error');
+    try {
+        const res = await fetch(`${API_URL}/admin/login`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: u, password: p })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            localStorage.setItem('adminToken', data.token);
+            showToast("تم تسجيل الدخول بنجاح! ✨");
+            showAdminDashboard();
+        } else {
+            showToast(data.message, "error");
+        }
+    } catch(err) {
+        showToast("فشل الاتصال بالسيرفر", "error");
     }
-});
-
-document.getElementById('changePasswordForm')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    showToast('تم حفظ كلمة المرور الجديدة بنجاح ✨');
-    e.target.reset();
 });
