@@ -1,77 +1,584 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-body { background: #070a12; color: #f1f5f9; min-height: 100vh; }
+/* ==========================================
+   الأساسيات وإعادة الضبط العامة
+   ========================================== */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Cairo', sans-serif; 
+}
 
-.main-header { background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.08); position: fixed; top: 0; width: 100%; z-index: 1000; backdrop-filter: blur(12px); }
-.admin-header { background: #0f172a !important; border-bottom: 2px solid #f59e0b !important; }
+body { 
+    background: #070a12; 
+    color: #f1f5f9; 
+    min-height: 100vh; 
+    direction: rtl;
+    overflow-x: hidden;
+}
 
-.nav-container { max-width: 1320px; margin: 0 auto; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+/* ==========================================
+   الهيدر وشريط التنقل (Header & Nav)
+   ========================================== */
+.main-header { 
+    background: rgba(15, 23, 42, 0.95); 
+    border-bottom: 1px solid rgba(255,255,255,0.08); 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    z-index: 1000; 
+    backdrop-filter: blur(12px); 
+}
 
-.brand-logo { display: flex; align-items: center; gap: 12px; }
-.logo-icon { font-size: 28px; background: rgba(56, 189, 248, 0.1); padding: 6px 10px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2); }
-.logo-text { display: flex; flex-direction: column; }
-.company-name { font-size: 17px; font-weight: 800; color: #f8fafc; }
-.company-sub { font-size: 11px; color: #38bdf8; font-weight: 700; }
+.admin-header { 
+    background: #0f172a !important; 
+    border-bottom: 2px solid #f59e0b !important; 
+}
 
-.nav-menu { display: flex; gap: 6px; list-style: none; flex-wrap: wrap; }
-.nav-link { background: transparent; border: none; color: #94a3b8; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-.nav-link:hover, .nav-link.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
-.admin-tabs .nav-link.active { background: #f59e0b !important; color: #000 !important; font-weight: 800; }
+.nav-container { 
+    max-width: 1320px; 
+    margin: 0 auto; 
+    padding: 12px 24px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+}
 
-.btn-portal-access { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
-.btn-preview { background: #38bdf8; color: #000; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
-.btn-logout { background: #ef4444; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+/* اللوجو والعلامة التجارية */
+.brand-logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+}
 
-.content-wrapper { max-width: 1200px; margin: 0 auto; padding: 110px 20px 40px; }
-.portal-page, .admin-tab-content { display: none; }
-.portal-page.active-page, .admin-tab-content.active-tab { display: block; }
+.site-logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 8px;
+}
 
-.section-header h2 { font-size: 22px; color: #f8fafc; font-weight: 800; }
-.section-header p { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+.logo-icon { 
+    font-size: 26px; 
+    background: rgba(56, 189, 248, 0.1); 
+    padding: 6px 10px; 
+    border-radius: 12px; 
+    border: 1px solid rgba(56, 189, 248, 0.2); 
+}
 
-.brick-catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px; }
-.brick-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; }
-.brick-card h4 { font-size: 18px; color: #38bdf8; margin-bottom: 12px; }
-.brick-spec-list { list-style: none; margin-bottom: 16px; }
-.brick-spec-list li { font-size: 13px; color: #cbd5e1; margin-bottom: 8px; display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 4px; }
-.price-tag-big { font-size: 18px; font-weight: 900; color: #10b981; text-align: center; background: rgba(16, 185, 129, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); margin-bottom: 12px; }
+.logo-text { 
+    display: flex; 
+    flex-direction: column; 
+}
 
-.gov-prices-box { background: #1e293b; border-radius: 10px; padding: 10px; max-height: 160px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); }
-.gov-prices-box h5 { font-size: 12px; color: #f59e0b; margin-bottom: 6px; font-weight: 700; text-align: center; }
-.gov-price-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; }
-.gov-price-row span:last-child { color: #38bdf8; font-weight: 700; }
+.company-name { 
+    font-size: 18px; 
+    font-weight: 800; 
+    color: #f8fafc; 
+}
 
-.custom-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 16px; margin-bottom: 24px; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-.full-width { grid-column: 1 / -1; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group label { font-size: 13px; color: #94a3b8; font-weight: 700; }
-.form-group input, .form-group select { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px; border-radius: 8px; font-size: 14px; outline: none; }
-.highlight-input { background: #0284c7 !important; color: #fff !important; font-weight: 800; font-size: 16px !important; }
-.btn-submit { background: #38bdf8; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; grid-column: 1 / -1; font-size: 15px; }
+.company-sub { 
+    font-size: 11px; 
+    color: #38bdf8; 
+    font-weight: 700; 
+}
 
-.media-section { margin-top: 30px; }
-.media-placeholder-box { background: #0f172a; border: 2px dashed rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; text-align: center; color: #64748b; font-size: 13px; margin-top: 10px; }
+/* أزرار القائمة */
+.nav-menu { 
+    display: flex; 
+    gap: 6px; 
+    list-style: none; 
+    flex-wrap: wrap; 
+}
 
-.finance-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-.finance-card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-.finance-card span { font-size: 12px; color: #94a3b8; }
-.finance-card h4 { font-size: 22px; color: #38bdf8; font-weight: 800; margin-top: 6px; }
-.finance-card.highlight h4 { color: #10b981; }
+.nav-link { 
+    background: transparent; 
+    border: none; 
+    color: #94a3b8; 
+    font-size: 13px; 
+    font-weight: 700; 
+    padding: 8px 14px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+}
 
-.table-responsive { overflow-x: auto; }
-table { width: 100%; min-width: 800px; border-collapse: collapse; text-align: right; }
-th, td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-th { color: #64748b; font-weight: 700; }
+.nav-link:hover, .nav-link.active { 
+    background: rgba(56, 189, 248, 0.1); 
+    color: #38bdf8; 
+}
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-.modal-card { background: #0f172a; padding: 28px; border-radius: 16px; width: 90%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-.modal-card input { width: 100%; padding: 12px; margin: 10px 0; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; text-align: center; }
-.modal-actions { display: flex; gap: 8px; margin-top: 10px; }
-.btn-cancel { background: #334155; color: #fff; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; }
+.admin-tabs .nav-link.active { 
+    background: #f59e0b !important; 
+    color: #000 !important; 
+    font-weight: 800; 
+}
 
-#toast-container { position: fixed; bottom: 24px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-.custom-toast { background: #0f172a; color: #f8fafc; border: 1px solid #38bdf8; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; }
-.custom-toast.show { opacity: 1; transform: translateY(0); }
-.custom-toast.error { border-color: #ef4444; color: #f77171; }
+/* الأزرار العلوية الإدارية */
+.admin-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-portal-access { 
+    background: rgba(245, 158, 11, 0.15); 
+    color: #f59e0b; 
+    border: 1px solid #f59e0b; 
+    padding: 8px 16px; 
+    border-radius: 8px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    transition: 0.2s;
+}
+
+.btn-portal-access:hover {
+    background: #f59e0b;
+    color: #000;
+}
+
+.btn-preview { 
+    background: #38bdf8; 
+    color: #000; 
+    border: none; 
+    padding: 8px 16px; 
+    border-radius: 8px; 
+    font-weight: 800; 
+    cursor: pointer; 
+}
+
+.btn-logout { 
+    background: #ef4444; 
+    color: #fff; 
+    border: none; 
+    padding: 8px 16px; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    cursor: pointer; 
+}
+
+/* ==========================================
+   محتوى الصفحات وأقسام الموقع
+   ========================================== */
+.content-wrapper { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 110px 20px 40px; 
+}
+
+.portal-page, .admin-tab-content { 
+    display: none; 
+}
+
+.portal-page.active-page, .admin-tab-content.active-tab { 
+    display: block; 
+}
+
+.section-header h2 { 
+    font-size: 22px; 
+    color: #f8fafc; 
+    font-weight: 800; 
+}
+
+.section-header p { 
+    font-size: 13px; 
+    color: #64748b; 
+    margin-bottom: 24px; 
+}
+
+/* ==========================================
+   كتالوج الطوب والأسعار
+   ========================================== */
+.brick-catalog-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 20px; 
+    margin-bottom: 30px; 
+}
+
+.brick-card { 
+    background: #0f172a; 
+    border: 1px solid rgba(255,255,255,0.08); 
+    border-radius: 16px; 
+    padding: 20px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.brick-card h4 { 
+    font-size: 18px; 
+    color: #38bdf8; 
+    margin-bottom: 12px; 
+}
+
+.brick-spec-list { 
+    list-style: none; 
+    margin-bottom: 16px; 
+}
+
+.brick-spec-list li { 
+    font-size: 13px; 
+    color: #cbd5e1; 
+    margin-bottom: 8px; 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px dashed rgba(255,255,255,0.05); 
+    padding-bottom: 4px; 
+}
+
+.price-tag-big { 
+    font-size: 18px; 
+    font-weight: 900; 
+    color: #10b981; 
+    text-align: center; 
+    background: rgba(16, 185, 129, 0.1); 
+    padding: 8px; 
+    border-radius: 8px; 
+    border: 1px solid rgba(16, 185, 129, 0.2); 
+    margin-bottom: 12px; 
+}
+
+.gov-prices-box { 
+    background: #1e293b; 
+    border-radius: 10px; 
+    padding: 10px; 
+    max-height: 160px; 
+    overflow-y: auto; 
+    border: 1px solid rgba(255,255,255,0.05); 
+}
+
+.gov-prices-box h5 { 
+    font-size: 12px; 
+    color: #f59e0b; 
+    margin-bottom: 6px; 
+    font-weight: 700; 
+    text-align: center; 
+}
+
+.gov-price-row { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 12px; 
+    padding: 4px 0; 
+    border-bottom: 1px solid rgba(255,255,255,0.03); 
+    color: #cbd5e1; 
+}
+
+.gov-price-row span:last-child { 
+    color: #38bdf8; 
+    font-weight: 700; 
+}
+
+/* ==========================================
+   قسم الشهادات والجودة
+   ========================================== */
+.certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.cert-card {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.cert-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.cert-card h4 {
+    color: #38bdf8;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.cert-card p {
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   النماذج والكروت (Forms & Cards)
+   ========================================== */
+.custom-card { 
+    background: #0f172a; 
+    border: 1px solid rgba(255,255,255,0.08); 
+    padding: 24px; 
+    border-radius: 16px; 
+    margin-bottom: 24px; 
+}
+
+.form-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 16px; 
+}
+
+.full-width { 
+    grid-column: 1 / -1; 
+}
+
+.form-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+}
+
+.form-group label { 
+    font-size: 13px; 
+    color: #94a3b8; 
+    font-weight: 700; 
+}
+
+.form-group input, .form-group select { 
+    background: #1e293b; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    color: #fff; 
+    padding: 12px; 
+    border-radius: 8px; 
+    font-size: 14px; 
+    outline: none; 
+    width: 100%;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #38bdf8;
+}
+
+.highlight-input { 
+    background: #0284c7 !important; 
+    color: #fff !important; 
+    font-weight: 800; 
+    font-size: 16px !important; 
+}
+
+.btn-submit { 
+    background: #38bdf8; 
+    color: #000; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 8px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    grid-column: 1 / -1; 
+    font-size: 15px; 
+    transition: 0.2s ease;
+}
+
+.whatsapp-btn {
+    background: #25D366 !important;
+    color: #fff !important;
+}
+
+.whatsapp-btn:hover {
+    background: #1da851 !important;
+}
+
+/* ==========================================
+   معرض الميديا والجداول
+   ========================================== */
+.media-section { 
+    margin-top: 30px; 
+}
+
+.media-placeholder-box { 
+    background: #0f172a; 
+    border: 2px dashed rgba(255,255,255,0.1); 
+    padding: 20px; 
+    border-radius: 12px; 
+    text-align: center; 
+    color: #64748b; 
+    font-size: 13px; 
+    margin-top: 10px; 
+}
+
+.finance-summary-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 16px; 
+}
+
+.finance-card { 
+    background: #1e293b; 
+    padding: 20px; 
+    border-radius: 12px; 
+    border: 1px solid rgba(255,255,255,0.05); 
+}
+
+.finance-card span { 
+    font-size: 12px; 
+    color: #94a3b8; 
+}
+
+.finance-card h4 { 
+    font-size: 22px; 
+    color: #38bdf8; 
+    font-weight: 800; 
+    margin-top: 6px; 
+}
+
+.finance-card.highlight h4 { 
+    color: #10b981; 
+}
+
+.table-responsive { 
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch;
+}
+
+table { 
+    width: 100%; 
+    min-width: 700px; 
+    border-collapse: collapse; 
+    text-align: right; 
+}
+
+th, td { 
+    padding: 12px 14px; 
+    font-size: 13px; 
+    border-bottom: 1px solid rgba(255,255,255,0.05); 
+}
+
+th { 
+    color: #64748b; 
+    font-weight: 700; 
+}
+
+/* ==========================================
+   النافذة المنبثقة والإشعارات (Modal & Toast)
+   ========================================== */
+.modal-overlay { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.85); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 2000; 
+}
+
+.modal-card { 
+    background: #0f172a; 
+    padding: 28px; 
+    border-radius: 16px; 
+    width: 90%; 
+    max-width: 380px; 
+    text-align: center; 
+    border: 1px solid rgba(255,255,255,0.1); 
+}
+
+.modal-card input { 
+    width: 100%; 
+    padding: 12px; 
+    margin: 10px 0; 
+    background: #1e293b; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    color: #fff; 
+    border-radius: 8px; 
+    text-align: center; 
+}
+
+.modal-actions { 
+    display: flex; 
+    gap: 8px; 
+    margin-top: 10px; 
+}
+
+.btn-cancel { 
+    background: #334155; 
+    color: #fff; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 8px; 
+    flex: 1; 
+    cursor: pointer; 
+}
+
+#toast-container { 
+    position: fixed; 
+    bottom: 24px; 
+    left: 24px; 
+    z-index: 9999; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+
+.custom-toast { 
+    background: #0f172a; 
+    color: #f8fafc; 
+    border: 1px solid #38bdf8; 
+    padding: 12px 20px; 
+    border-radius: 10px; 
+    font-weight: 700; 
+    font-size: 14px; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); 
+    opacity: 0; 
+    transform: translateY(20px); 
+    transition: all 0.3s ease; 
+}
+
+.custom-toast.show { 
+    opacity: 1; 
+    transform: translateY(0); 
+}
+
+.custom-toast.error { 
+    border-color: #ef4444; 
+    color: #f77171; 
+}
+
+/* ==========================================
+   التوافق مع أجهزة المحمول (Media Queries)
+   ========================================== */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .brand-logo {
+        justify-content: center;
+    }
+
+    .nav-menu {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .nav-link {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .admin-actions {
+        justify-content: center;
+    }
+
+    .content-wrapper {
+        padding-top: 190px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brick-catalog-grid {
+        grid-template-columns: 1fr;
+    }
+}
