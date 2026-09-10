@@ -3,48 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤسسة البشمهندس خالد للتوريدات العمومية</title>
+    <!-- تحسينات محركات البحث SEO -->
+    <title>العمار مصر | توريدات الطوب ومواد البناء لكافة المحافظات</title>
+    <meta name="description" content="مؤسسة العمار مصر لتوريد كافة أنواع الطوب الأحمر والأسمني والمفرغ بأسعار المصنع مع خدمات النقل والمشال لكافة محافظات الجمهورية.">
+    
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- هيدر الواجهة الرئيسية للعملاء -->
     <header class="main-header" id="clientNav">
         <div class="nav-container">
             <div class="brand-logo">
-                <div class="logo-icon">🏗️</div>
+                <img src="logo.jpg" alt="العمار مصر" class="site-logo-img" onerror="this.style.display='none'; document.getElementById('altLogoIcon').style.display='inline-block';">
+                <span id="altLogoIcon" class="logo-icon" style="display:none;">🏗️</span>
                 <div class="logo-text">
-                    <span class="company-name">مؤسسة خالد للتوريدات</span>
-                    <span class="company-sub">ل للمقاولات ومواد البناء</span>
+                    <span class="company-name">العمار مصر</span>
+                    <span class="company-sub">لتوريدات الطوب ومواد البناء</span>
                 </div>
             </div>
             <nav class="nav-menu">
-                <button class="nav-link active" onclick="showSection('prices-section', this)">🧱 كتالوج الطوب والمشال للمحافظات</button>
+                <button class="nav-link active" onclick="showSection('prices-section', this)">🧱 كتالوج الطوب والمشال</button>
+                <button class="nav-link" onclick="showSection('certificates-section', this)">📜 الجودة والشهادات</button>
                 <button class="nav-link" onclick="showSection('request-section', this)">📝 طلب توريد للموقع</button>
-                <button class="nav-link" onclick="showSection('location-section', this)">📍 مقر الشركة (GPS)</button>
+                <button class="nav-link" onclick="showSection('location-section', this)">📍 مقر الشركة</button>
             </nav>
             <button class="btn-portal-access" onclick="openAdminModal()">لوحة الإدارة والمحاسب 🔒</button>
         </div>
     </header>
 
+    <!-- هيدر لوحة التحكم والسيطرة -->
     <header class="main-header admin-header" id="adminNav" style="display: none;">
         <div class="nav-container">
             <div class="brand-logo">
-                <div class="logo-icon">⚙️</div>
+                <img src="logo.jpg" alt="العمار مصر" class="site-logo-img" onerror="this.style.display='none';">
                 <div class="logo-text">
                     <span class="company-name">لوحة التحكم والسيطرة</span>
-                    <span class="company-sub">إدارة المبيعات والأسعار والمشال</span>
+                    <span class="company-sub">إدارة مبيعات العمار مصر</span>
                 </div>
             </div>
             <nav class="nav-menu admin-tabs">
                 <button class="nav-link active" onclick="showAdminTab('tab-bricks', this)">📦 إدارة الطوب والأسعار</button>
-                <button class="nav-link" onclick="showAdminTab('tab-freight', this)">🚚 أسعار المشال والمحافظات</button>
+                <button class="nav-link" onclick="showAdminTab('tab-freight', this)">🚚 أسعار المشال والمافظات</button>
                 <button class="nav-link" onclick="showAdminTab('tab-drivers', this)">🚛 حركة السائقين</button>
                 <button class="nav-link" onclick="showAdminTab('tab-finance', this)">📊 الحسابات والمالية</button>
                 <button class="nav-link" onclick="showAdminTab('tab-settings', this)">🔐 إعدادات الحساب</button>
             </nav>
             <div class="admin-actions">
-                <button class="btn-preview" onclick="logoutAdmin()">معاينة كمهندس 👁️</button>
+                <button class="btn-preview" onclick="logoutAdmin()">معاينة كمعاين 👁️</button>
                 <button class="btn-logout" onclick="logoutAdmin()">خروج 🚪</button>
             </div>
         </div>
@@ -54,27 +61,54 @@
 
         <div id="clientPortal">
             
+            <!-- قسم الكتالوج والأسعار -->
             <section id="prices-section" class="portal-page active-page">
                 <div class="section-header">
-                    <h2>كتالوج أسعار الطوب ومشال المحافظات المصرية الـ 27</h2>
+                    <h2>كتالوج أسعار الطوب ومشال المحافظات المصرية</h2>
                     <p>المقاسات القياسية المعتمدة وأسعار اليوم شاملة تكلفة المشال والنقل لكافة محافظات الجمهورية</p>
                 </div>
 
                 <div class="brick-catalog-grid" id="pricesDisplayGrid"></div>
 
-                <div class="media-section">
+                <div class="media-section custom-card" style="margin-top: 30px;">
                     <h3>🎬 معرض المعاينة الميدانية وفيديوهات الموقع</h3>
                     <div class="media-placeholder-box">
-                        <p>📌 **مكان مخصص للفيديوهات والصور الخاص بشركتك:**</p>
-                        <span>(لتفعيل هذا الجزء: قم بإضافة روابط فيديوهاتك أو صورك هنا)</span>
+                        <p>📌 **مكان مخصص للفيديوهات وصور مصانع وتوريدات العمار مصر:**</p>
+                        <span>(يمكن إضافة الصور أو فيديوهات المعاينة الميدانية هنا)</span>
                     </div>
                 </div>
             </section>
 
+            <!-- قسم الشهادات والجودة -->
+            <section id="certificates-section" class="portal-page">
+                <div class="section-header">
+                    <h2>شهادات الجودة والاعتمادات الرسمية</h2>
+                    <p>نلتزم بكافة المواصفات القياسية الهندسية المصرية لضمان أعلى جودة في البناء</p>
+                </div>
+                <div class="custom-card certificates-grid">
+                    <div class="cert-card">
+                        <div class="cert-icon">🏅</div>
+                        <h4>شهادة المواصفات القياسية</h4>
+                        <p>منتجاتنا مطابقة للمواصفات القياسية المصرية والأكواد الهندسية المعتمدة.</p>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon">🔬</div>
+                        <h4>اختبارات قوة الضغط</h4>
+                        <p>نتائج اختبارات معملية تضمن صلابة ومقاومة الطوب لأعلى الأحمال.</p>
+                    </div>
+                    <div class="cert-card">
+                        <div class="cert-icon">🤝</div>
+                        <h4>اعتماد كبرى الشركات</h4>
+                        <p>مورد معتمد لكبرى شركات المقاولات والمشاريع القومية في مصر.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم طلب التوريد (مربوط بالواتساب) -->
             <section id="request-section" class="portal-page">
                 <div class="section-header">
                     <h2>تقديم طلب توريد طوب للموقع</h2>
-                    <p>اختر المحافظة لتطبيق سعر المشال والنقل المناسب وسيتم تحويل الطلب فوراً للمحاسب والسائقين</p>
+                    <p>اختر المحافظة لتطبيق سعر المشال المناسب وسيتم تحويل طلبك مباشرة عبر الواتساب للمكتب الرئيسي</p>
                 </div>
 
                 <div class="custom-card">
@@ -107,14 +141,15 @@
                             <label>العنوان التفصيلي ومكان التوريد بالموقع</label>
                             <input type="text" id="reqAddress" placeholder="مثال: شارع النهضة - الموقع بجوار..." required>
                         </div>
-                        <button type="submit" class="btn-submit">تأكيد وإرسال الطلب للمكتب 🚀</button>
+                        <button type="submit" class="btn-submit whatsapp-btn">تأكيد وإرسال الطلب عبر الواتساب 💬🚀</button>
                     </form>
                 </div>
             </section>
 
+            <!-- قسم موقع المقر -->
             <section id="location-section" class="portal-page">
                 <div class="section-header">
-                    <h2>مقر المكتب الرئيسي (GPS)</h2>
+                    <h2>مقر شركة العمار مصر الرئيسي (GPS)</h2>
                     <p>يشرفنا حضوركم بمقر الشركة لمتابعة العقود والتوريدات</p>
                 </div>
                 <div class="custom-card">
@@ -124,6 +159,7 @@
 
         </div>
 
+        <!-- النافذة المنبثقة لتسجيل دخول الإدارة -->
         <div id="adminAuthModal" class="modal-overlay" style="display: none;">
             <div class="modal-card">
                 <h3>دخول لوحة المحاسب والإدارة 🔒</h3>
@@ -139,6 +175,7 @@
             </div>
         </div>
 
+        <!-- لوحة التحكم الإدارية -->
         <div id="adminPortal" style="display: none;">
 
             <div id="tab-bricks" class="admin-tab-content active-tab">
@@ -169,7 +206,7 @@
 
             <div id="tab-freight" class="admin-tab-content">
                 <div class="custom-card">
-                    <h3>🚚 تحكم في أسعار المشال والنقل لمافظات مصر</h3>
+                    <h3>🚚 تحكم في أسعار المشال والنقل لمحافظات مصر</h3>
                     <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">يمكنك تعديل سعر المشال والنقل لكل ألف طوبة لأي محافظة وسيتحدث فوراً للعملاء.</p>
                     <div class="table-responsive">
                         <table>
@@ -195,7 +232,7 @@
                                 <tr>
                                     <th>رقم الأوردر</th>
                                     <th>اسم المهندس / الموقع</th>
-                                    <th>نوع الطوب والكمية والمحافظة</th>
+                                    <th>نوع الطوب والكمية والمافظة</th>
                                     <th>العنوان التفصيلي</th>
                                     <th>اسم السائق / رقم السيارة</th>
                                     <th>حالة الشحنة</th>
