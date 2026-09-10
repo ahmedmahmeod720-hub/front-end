@@ -1,4 +1,4 @@
-const API_URL = "https://backend-yaft.onrender.com/api";
+const API_URL = "https://backend-yaft.onrender.com";
 const WHATSAPP_NUMBER = "201143348433";
 
 let currentBricks = {};
