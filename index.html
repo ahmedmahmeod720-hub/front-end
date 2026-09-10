@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -20,7 +21,15 @@
     <!-- الهيدر والتحكم -->
     <header class="main-header">
         <div class="header-container">
-            <h1>🧱 مؤسسة العمار مصر</h1>
+            <!-- مكان اللوجو الجديد -->
+            <div class="brand-logo-container">
+                <img src="images/logo.png" alt="لوجو العمار مصر" class="brand-logo" onerror="this.src='https://via.placeholder.com/60x60?text=LOGO'">
+                <div class="brand-text">
+                    <h1>مؤسسة العمار مصر</h1>
+                    <span>لتوريد كافة أنواع الطوب والمواد الهندسية</span>
+                </div>
+            </div>
+
             <nav id="clientNav">
                 <button class="nav-link active" onclick="showSection('catalogPage', this)">الكتالوج والأسعار</button>
                 <button class="nav-link" onclick="showSection('orderPage', this)">طلب توريد</button>
@@ -39,38 +48,41 @@
     <!-- واجهة العميل -->
     <main id="clientPortal" class="container">
         
-        <!-- قسم شهادات الجودة والاعتماد -->
-        <section class="certificates-container">
-            <div class="section-title">
-                <h2>📜 شهادات الجودة والاعتماد الرسمية</h2>
-                <p>معتمدون لدى أكبر الجهات الهندسية والمشاريع القومية</p>
-            </div>
-            <div class="certificates-grid">
-                <!-- يمكنك تغيير اسم الصور من هنا (مثلاً: images/cert1.jpg) -->
-                <div class="cert-card">
-                    <img src="images/certificate1.jpg" alt="شهادة جودة 1" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=شهادة+الجودة+1'">
-                    <p>شهادة اختبار الجودة والاعتماد</p>
-                </div>
-                <div class="cert-card">
-                    <img src="images/certificate2.jpg" alt="شهادة جودة 2" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=شهادة+الجودة+2'">
-                    <p>شهادة مطابقة المواصفات القياسية</p>
-                </div>
-                <div class="cert-card">
-                    <img src="images/certificate3.jpg" alt="شهادة جودة 3" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=اعتماد+المشاريع'">
-                    <p>اعتماد الهيئة العامة للمشاريع</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- صفحة الكتالوج -->
+        <!-- صفحة الكتالوج والشهادات معاً -->
         <section id="catalogPage" class="portal-page active-page">
+            
+            <!-- قسم شهادات الجودة والاعتماد -->
+            <div class="certificates-container">
+                <div class="section-title">
+                    <h2>📜 شهادات الجودة والاعتماد الرسمية</h2>
+                    <p>معتمدون لدى أكبر الجهات الهندسية والمشاريع القومية</p>
+                </div>
+                <div class="certificates-grid">
+                    <div class="cert-card">
+                        <img src="images/certificate1.jpg" alt="شهادة جودة 1" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=شهادة+الجودة+1'">
+                        <p>شهادة اختبار الجودة والاعتماد</p>
+                    </div>
+                    <div class="cert-card">
+                        <img src="images/certificate2.jpg" alt="شهادة جودة 2" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=شهادة+مطابقة+المواصفات'">
+                        <p>شهادة مطابقة المواصفات القياسية</p>
+                    </div>
+                    <div class="cert-card">
+                        <img src="images/certificate3.jpg" alt="شهادة جودة 3" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=اعتماد+المشاريع'">
+                        <p>اعتماد الهيئة العامة للمشاريع</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- عرض أنواع الطوب والكتالوج -->
             <div class="section-title">
                 <h2>🧱 كتالوج الطوب والأسعار الحالية</h2>
             </div>
             <div id="pricesDisplayGrid" class="brick-grid"></div>
         </section>
 
-        <!-- صفحة الطلب -->
+        <!-- صفحة تقديم طلب توريد -->
         <section id="orderPage" class="portal-page">
             <div class="section-title">
                 <h2>📝 تقديم طلب توريد جديد</h2>
@@ -93,7 +105,7 @@
                     <input type="number" id="reqQty" value="10000" step="1000" oninput="calculateOrderTotal()" required>
                 </div>
                 <div class="form-group">
-                    <label>المحافظة:</label>
+                    <label>المحافظة وتكلفة المشال:</label>
                     <select id="reqGovernorate" onchange="calculateOrderTotal()"></select>
                 </div>
                 <div class="form-group full-width">
@@ -113,35 +125,35 @@
     <!-- لوحة التحكم (الإدارة) -->
     <main id="adminPortal" class="container" style="display: none;">
         
-        <!-- إدارة الأسعار -->
+        <!-- إدارة الأسعار وأنواع الطوب -->
         <section id="tabPrices" class="admin-tab-content active-tab">
             <h3>🔨 إضافة نوع طوب جديد</h3>
-            <form id="addNewBrickForm" class="custom-form">
+            <form id="addNewBrickForm" class="custom-form" onsubmit="handleAddNewBrick(event)">
                 <input type="text" id="newBrickName" placeholder="اسم نوع الطوب" required>
                 <input type="number" id="newBrickPrice" placeholder="السعر لكل ألف" required>
                 <input type="text" id="newBrickSize" placeholder="المقاس (مثال: 25×12×6)">
                 <button type="submit" class="btn-submit">إضافة للكتالوج ➕</button>
             </form>
-            <hr>
-            <h3>✏️ تعديل أسعار ومواصفات الكتالوج</h3>
+            <hr class="section-divider">
+            <h3>✏️ تعديل وتعديل أسعار الكتالوج الحالية</h3>
             <div id="adminPriceControls"></div>
         </section>
 
-        <!-- المشال والمحافظات -->
+        <!-- إدارة المحافظات والمشال -->
         <section id="tabFreight" class="admin-tab-content">
-            <h3>🚚 إضافة أو تعديل محافظة</h3>
-            <form id="addNewGovForm" class="custom-form">
+            <h3>🚚 إضافة محافظة جديدة</h3>
+            <form id="addNewGovForm" class="custom-form" onsubmit="handleAddNewGov(event)">
                 <input type="text" id="newGovName" placeholder="اسم المحافظة" required>
                 <input type="number" id="newGovFreight" placeholder="تكلفة المشال لكل ألف" required>
                 <button type="submit" class="btn-submit">حفظ المحافظة 📍</button>
             </form>
-            <hr>
-            <h3>تعديل وحذف المحافظات</h3>
+            <hr class="section-divider">
+            <h3>تعديل وحذف أسعار المشال للمحافظات</h3>
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>المحافظة</th>
-                        <th>سعر المشال / ألف</th>
+                        <th>سعر المشال / ألف طوبة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
@@ -160,7 +172,7 @@
                 <thead>
                     <tr>
                         <th>رقم الأوردر</th>
-                        <th>اسم العميل / المهندس</th>
+                        <th>اسم العميل</th>
                         <th>التليفون</th>
                         <th>الطلب والكمية</th>
                         <th>المحافظة والعنوان</th>
