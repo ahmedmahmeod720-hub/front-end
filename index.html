@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -21,7 +20,7 @@
     <!-- الهيدر والتحكم -->
     <header class="main-header">
         <div class="header-container">
-            <!-- مكان اللوجو الجديد -->
+            <!-- مكان اللوجو -->
             <div class="brand-logo-container">
                 <img src="images/logo.png" alt="لوجو العمار مصر" class="brand-logo" onerror="this.src='https://via.placeholder.com/60x60?text=LOGO'">
                 <div class="brand-text">
@@ -30,8 +29,10 @@
                 </div>
             </div>
 
+            <!-- زرار النافبار بعد التعديل (إضافة صفحة الشهادات) -->
             <nav id="clientNav">
                 <button class="nav-link active" onclick="showSection('catalogPage', this)">الكتالوج والأسعار</button>
+                <button class="nav-link" onclick="showSection('certificatesPage', this)">شهادات الجودة 📜</button>
                 <button class="nav-link" onclick="showSection('orderPage', this)">طلب توريد</button>
                 <button class="nav-link admin-btn" onclick="openAdminModal()">لوحة الإدارة 🔐</button>
             </nav>
@@ -48,10 +49,16 @@
     <!-- واجهة العميل -->
     <main id="clientPortal" class="container">
         
-        <!-- صفحة الكتالوج والشهادات معاً -->
+        <!-- صفحة الكتالوج والأسعار -->
         <section id="catalogPage" class="portal-page active-page">
-            
-            <!-- قسم شهادات الجودة والاعتماد -->
+            <div class="section-title">
+                <h2>🧱 كتالوج الطوب والأسعار الحالية</h2>
+            </div>
+            <div id="pricesDisplayGrid" class="brick-grid"></div>
+        </section>
+
+        <!-- صفحة شهادات الجودة والاعتماد (مستقلة بذاتها) -->
+        <section id="certificatesPage" class="portal-page">
             <div class="certificates-container">
                 <div class="section-title">
                     <h2>📜 شهادات الجودة والاعتماد الرسمية</h2>
@@ -72,14 +79,6 @@
                     </div>
                 </div>
             </div>
-
-            <hr class="section-divider">
-
-            <!-- عرض أنواع الطوب والكتالوج -->
-            <div class="section-title">
-                <h2>🧱 كتالوج الطوب والأسعار الحالية</h2>
-            </div>
-            <div id="pricesDisplayGrid" class="brick-grid"></div>
         </section>
 
         <!-- صفحة تقديم طلب توريد -->
