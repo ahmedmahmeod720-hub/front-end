@@ -3,299 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- تحسينات محركات البحث SEO -->
-    <title>العمار مصر | توريدات الطوب ومواد البناء لكافة المحافظات</title>
-    <meta name="description" content="مؤسسة العمار مصر لتوريد كافة أنواع الطوب الأحمر والأسمني والمفرغ بأسعار المصنع مع خدمات النقل والمشال لكافة محافظات الجمهورية.">
-    
+    <title>مؤسسة العمار مصر | لتوريد كافة أنواع الطوب</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- هيدر الواجهة الرئيسية للعملاء -->
-    <header class="main-header" id="clientNav">
-        <div class="nav-container">
-            <div class="brand-logo">
-                <img src="logo.jpg" alt="العمار مصر" class="site-logo-img" onerror="this.style.display='none'; document.getElementById('altLogoIcon').style.display='inline-block';">
-                <span id="altLogoIcon" class="logo-icon" style="display:none;">🏗️</span>
-                <div class="logo-text">
-                    <span class="company-name">العمار مصر</span>
-                    <span class="company-sub">لتوريدات الطوب ومواد البناء</span>
-                </div>
-            </div>
-            <nav class="nav-menu">
-                <button class="nav-link active" onclick="showSection('prices-section', this)">🧱 كتالوج الطوب والمشال</button>
-                <button class="nav-link" onclick="showSection('certificates-section', this)">📜 الجودة والشهادات</button>
-                <button class="nav-link" onclick="showSection('request-section', this)">📝 طلب توريد للموقع</button>
-                <button class="nav-link" onclick="showSection('location-section', this)">📍 مقر الشركة</button>
+    <!-- التنبيهات -->
+    <div id="toast-container"></div>
+
+    <!-- نافذة تكبير الشهادات -->
+    <div id="certModal" class="cert-modal" onclick="closeCertModal()">
+        <span class="close-modal">&times;</span>
+        <img class="cert-modal-content" id="imgModalTarget" alt="شهادة مكبرة">
+    </div>
+
+    <!-- الهيدر والتحكم -->
+    <header class="main-header">
+        <div class="header-container">
+            <h1>🧱 مؤسسة العمار مصر</h1>
+            <nav id="clientNav">
+                <button class="nav-link active" onclick="showSection('catalogPage', this)">الكتالوج والأسعار</button>
+                <button class="nav-link" onclick="showSection('orderPage', this)">طلب توريد</button>
+                <button class="nav-link admin-btn" onclick="openAdminModal()">لوحة الإدارة 🔐</button>
             </nav>
-            <button class="btn-portal-access" onclick="openAdminModal()">لوحة الإدارة والمحاسب 🔒</button>
+            <nav id="adminNav" style="display: none;">
+                <button class="nav-link active" onclick="showAdminTab('tabPrices', this)">إدارة الأسعار</button>
+                <button class="nav-link" onclick="showAdminTab('tabFreight', this)">المشال والمحافظات</button>
+                <button class="nav-link" onclick="showAdminTab('tabOrders', this)">إدارة الطلبات</button>
+                <button class="nav-link" onclick="showAdminTab('tabSettings', this)">إعدادات الحساب</button>
+                <button class="nav-link logout-btn" onclick="logoutAdmin()">خروج 👁️</button>
+            </nav>
         </div>
     </header>
 
-    <!-- هيدر لوحة التحكم والسيطرة -->
-    <header class="main-header admin-header" id="adminNav" style="display: none;">
-        <div class="nav-container">
-            <div class="brand-logo">
-                <img src="logo.jpg" alt="العمار مصر" class="site-logo-img" onerror="this.style.display='none';">
-                <div class="logo-text">
-                    <span class="company-name">لوحة التحكم والسيطرة</span>
-                    <span class="company-sub">إدارة مبيعات العمار مصر</span>
+    <!-- واجهة العميل -->
+    <main id="clientPortal" class="container">
+        
+        <!-- قسم شهادات الجودة والاعتماد -->
+        <section class="certificates-container">
+            <div class="section-title">
+                <h2>📜 شهادات الجودة والاعتماد الرسمية</h2>
+                <p>معتمدون لدى أكبر الجهات الهندسية والمشاريع القومية</p>
+            </div>
+            <div class="certificates-grid">
+                <!-- يمكنك تغيير اسم الصور من هنا (مثلاً: images/cert1.jpg) -->
+                <div class="cert-card">
+                    <img src="images/certificate1.jpg" alt="شهادة جودة 1" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=شهادة+الجودة+1'">
+                    <p>شهادة اختبار الجودة والاعتماد</p>
+                </div>
+                <div class="cert-card">
+                    <img src="images/certificate2.jpg" alt="شهادة جودة 2" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=شهادة+الجودة+2'">
+                    <p>شهادة مطابقة المواصفات القياسية</p>
+                </div>
+                <div class="cert-card">
+                    <img src="images/certificate3.jpg" alt="شهادة جودة 3" class="cert-img" onclick="openCertModal(this.src)" onerror="this.src='https://via.placeholder.com/300x400?text=اعتماد+المشاريع'">
+                    <p>اعتماد الهيئة العامة للمشاريع</p>
                 </div>
             </div>
-            <nav class="nav-menu admin-tabs">
-                <button class="nav-link active" onclick="showAdminTab('tab-bricks', this)">📦 إدارة الطوب والأسعار</button>
-                <button class="nav-link" onclick="showAdminTab('tab-freight', this)">🚚 أسعار المشال والمافظات</button>
-                <button class="nav-link" onclick="showAdminTab('tab-drivers', this)">🚛 حركة السائقين</button>
-                <button class="nav-link" onclick="showAdminTab('tab-finance', this)">📊 الحسابات والمالية</button>
-                <button class="nav-link" onclick="showAdminTab('tab-settings', this)">🔐 إعدادات الحساب</button>
-            </nav>
-            <div class="admin-actions">
-                <button class="btn-preview" onclick="logoutAdmin()">معاينة كمعاين 👁️</button>
-                <button class="btn-logout" onclick="logoutAdmin()">خروج 🚪</button>
+        </section>
+
+        <!-- صفحة الكتالوج -->
+        <section id="catalogPage" class="portal-page active-page">
+            <div class="section-title">
+                <h2>🧱 كتالوج الطوب والأسعار الحالية</h2>
             </div>
-        </div>
-    </header>
+            <div id="pricesDisplayGrid" class="brick-grid"></div>
+        </section>
 
-    <main class="content-wrapper">
-
-        <div id="clientPortal">
-            
-            <!-- قسم الكتالوج والأسعار -->
-            <section id="prices-section" class="portal-page active-page">
-                <div class="section-header">
-                    <h2>كتالوج أسعار الطوب ومشال المحافظات المصرية</h2>
-                    <p>المقاسات القياسية المعتمدة وأسعار اليوم شاملة تكلفة المشال والنقل لكافة محافظات الجمهورية</p>
-                </div>
-
-                <div class="brick-catalog-grid" id="pricesDisplayGrid"></div>
-
-                <div class="media-section custom-card" style="margin-top: 30px;">
-                    <h3>🎬 معرض المعاينة الميدانية وفيديوهات الموقع</h3>
-                    <div class="media-placeholder-box">
-                        <p>📌 **مكان مخصص للفيديوهات وصور مصانع وتوريدات العمار مصر:**</p>
-                        <span>(يمكن إضافة الصور أو فيديوهات المعاينة الميدانية هنا)</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- قسم الشهادات والجودة -->
-            <section id="certificates-section" class="portal-page">
-                <div class="section-header">
-                    <h2>شهادات الجودة والاعتمادات الرسمية</h2>
-                    <p>نلتزم بكافة المواصفات القياسية الهندسية المصرية لضمان أعلى جودة في البناء</p>
-                </div>
-                <div class="custom-card certificates-grid">
-                    <div class="cert-card">
-                        <div class="cert-icon">🏅</div>
-                        <h4>شهادة المواصفات القياسية</h4>
-                        <p>منتجاتنا مطابقة للمواصفات القياسية المصرية والأكواد الهندسية المعتمدة.</p>
-                    </div>
-                    <div class="cert-card">
-                        <div class="cert-icon">🔬</div>
-                        <h4>اختبارات قوة الضغط</h4>
-                        <p>نتائج اختبارات معملية تضمن صلابة ومقاومة الطوب لأعلى الأحمال.</p>
-                    </div>
-                    <div class="cert-card">
-                        <div class="cert-icon">🤝</div>
-                        <h4>اعتماد كبرى الشركات</h4>
-                        <p>مورد معتمد لكبرى شركات المقاولات والمشاريع القومية في مصر.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- قسم طلب التوريد (مربوط بالواتساب) -->
-            <section id="request-section" class="portal-page">
-                <div class="section-header">
-                    <h2>تقديم طلب توريد طوب للموقع</h2>
-                    <p>اختر المحافظة لتطبيق سعر المشال المناسب وسيتم تحويل طلبك مباشرة عبر الواتساب للمكتب الرئيسي</p>
-                </div>
-
-                <div class="custom-card">
-                    <form id="clientOrderForm" class="form-grid">
-                        <div class="form-group">
-                            <label>اسم المهندس / العميل</label>
-                            <input type="text" id="reqName" placeholder="أحمد علي" required>
-                        </div>
-                        <div class="form-group">
-                            <label>رقم التليفون / الواتساب</label>
-                            <input type="tel" id="reqPhone" placeholder="010xxxxxxx" required>
-                        </div>
-                        <div class="form-group">
-                            <label>نوع الطوب المطلوب</label>
-                            <select id="reqType" onchange="calculateOrderTotal()"></select>
-                        </div>
-                        <div class="form-group">
-                            <label>الكمية المطلوب توريدها (عدد الطوب)</label>
-                            <input type="number" id="reqQty" placeholder="مثال: 10000" oninput="calculateOrderTotal()" required>
-                        </div>
-                        <div class="form-group">
-                            <label>محافظة التوريد (حساب سعر المشال)</label>
-                            <select id="reqGovernorate" onchange="calculateOrderTotal()"></select>
-                        </div>
-                        <div class="form-group">
-                            <label>الإجمالي التقديري للطلب (شامل الطوب والمشال)</label>
-                            <input type="text" id="estimatedPrice" value="0 ج.م" readonly class="highlight-input">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>العنوان التفصيلي ومكان التوريد بالموقع</label>
-                            <input type="text" id="reqAddress" placeholder="مثال: شارع النهضة - الموقع بجوار..." required>
-                        </div>
-                        <button type="submit" class="btn-submit whatsapp-btn">تأكيد وإرسال الطلب عبر الواتساب 💬🚀</button>
-                    </form>
-                </div>
-            </section>
-
-            <!-- قسم موقع المقر -->
-            <section id="location-section" class="portal-page">
-                <div class="section-header">
-                    <h2>مقر شركة العمار مصر الرئيسي (GPS)</h2>
-                    <p>يشرفنا حضوركم بمقر الشركة لمتابعة العقود والتوريدات</p>
-                </div>
-                <div class="custom-card">
-                    <iframe src="https://maps.google.com/maps?q=29.849917,31.282222&z=15&output=embed" width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </section>
-
-        </div>
-
-        <!-- النافذة المنبثقة لتسجيل دخول الإدارة -->
-        <div id="adminAuthModal" class="modal-overlay" style="display: none;">
-            <div class="modal-card">
-                <h3>دخول لوحة المحاسب والإدارة 🔒</h3>
-                <p>أدخل بيانات الحساب للوصول إلى النظام</p>
-                <form id="loginForm">
-                    <input type="text" id="loginUsername" placeholder="اسم المستخدم" required>
-                    <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
-                    <div class="modal-actions">
-                        <button type="submit" class="btn-submit">تسجيل الدخول</button>
-                        <button type="button" class="btn-cancel" onclick="closeAdminModal()">إلغاء</button>
-                    </div>
-                </form>
+        <!-- صفحة الطلب -->
+        <section id="orderPage" class="portal-page">
+            <div class="section-title">
+                <h2>📝 تقديم طلب توريد جديد</h2>
             </div>
-        </div>
-
-        <!-- لوحة التحكم الإدارية -->
-        <div id="adminPortal" style="display: none;">
-
-            <div id="tab-bricks" class="admin-tab-content active-tab">
-                <div class="custom-card">
-                    <h3>➕ إضافة نوع طوب جديد تماماً للكتالوج</h3>
-                    <form id="addNewBrickForm" class="form-grid">
-                        <div class="form-group">
-                            <label>اسم نوع الطوب</label>
-                            <input type="text" id="newBrickName" placeholder="مثال: طوب رملي وردي" required>
-                        </div>
-                        <div class="form-group">
-                            <label>السعر الأساسي (لكل 1000 طوبة)</label>
-                            <input type="number" id="newBrickPrice" placeholder="مثال: 7000" required>
-                        </div>
-                        <div class="form-group full-width">
-                            <label>المقاس القياسي</label>
-                            <input type="text" id="newBrickSize" placeholder="مثال: 25×12×6 سم">
-                        </div>
-                        <button type="submit" class="btn-submit" style="background:#10b981; color:#fff;">إضافة الطوب للكتالوج فوراً ➕</button>
-                    </form>
+            <form id="clientOrderForm" class="custom-form">
+                <div class="form-group">
+                    <label>اسم المهندس / العميل:</label>
+                    <input type="text" id="reqName" required placeholder="أدخل الاسم بالكامل">
                 </div>
-
-                <div class="custom-card">
-                    <h3>🛠️ تعديل الأسعار والمواصفات أو حذف الأنواع</h3>
-                    <div id="adminPriceControls" class="form-grid"></div>
+                <div class="form-group">
+                    <label>رقم التليفون:</label>
+                    <input type="tel" id="reqPhone" required placeholder="01xxxxxxxx">
                 </div>
-            </div>
-
-            <div id="tab-freight" class="admin-tab-content">
-                <div class="custom-card">
-                    <h3>🚚 تحكم في أسعار المشال والنقل لمحافظات مصر</h3>
-                    <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">يمكنك تعديل سعر المشال والنقل لكل ألف طوبة لأي محافظة وسيتحدث فوراً للعملاء.</p>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>المحافظة</th>
-                                    <th>سعر المشال / النقل (لكل ألف طوبة)</th>
-                                    <th>إجراء التعديل</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminFreightTableBody"></tbody>
-                        </table>
-                    </div>
+                <div class="form-group">
+                    <label>نوع الطوب المطلوب:</label>
+                    <select id="reqType" onchange="calculateOrderTotal()"></select>
                 </div>
-            </div>
-
-            <div id="tab-drivers" class="admin-tab-content">
-                <div class="custom-card">
-                    <h3>🚛 إدارة شحنات السيارات وتعيين السائقين</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>رقم الأوردر</th>
-                                    <th>اسم المهندس / الموقع</th>
-                                    <th>نوع الطوب والكمية والمافظة</th>
-                                    <th>العنوان التفصيلي</th>
-                                    <th>اسم السائق / رقم السيارة</th>
-                                    <th>حالة الشحنة</th>
-                                    <th>إجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminDriversTableBody"></tbody>
-                        </table>
-                    </div>
+                <div class="form-group">
+                    <label>الكمية المطلوبة (بالطوبة):</label>
+                    <input type="number" id="reqQty" value="10000" step="1000" oninput="calculateOrderTotal()" required>
                 </div>
-            </div>
-
-            <div id="tab-finance" class="admin-tab-content">
-                <div class="custom-card">
-                    <h3>📊 شيت المبيعات والحسابات الإجمالية</h3>
-                    <div class="finance-summary-grid">
-                        <div class="finance-card">
-                            <span>إجمالي الطلبات</span>
-                            <h4 id="totalOrdersCount">0</h4>
-                        </div>
-                        <div class="finance-card highlight">
-                            <span>إجمالي المبيعات المتوقعة</span>
-                            <h4 id="totalRevenue">0 ج.م</h4>
-                        </div>
-                    </div>
-                    <div class="table-responsive" style="margin-top: 20px;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>الأوردر</th>
-                                    <th>العميل والتليفون</th>
-                                    <th>التفاصيل والمحافظة</th>
-                                    <th>المبلغ الإجمالي</th>
-                                    <th>حالة الدفع والتوصيل</th>
-                                    <th>إلغاء / مسح</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminFinanceTableBody"></tbody>
-                        </table>
-                    </div>
+                <div class="form-group">
+                    <label>المحافظة:</label>
+                    <select id="reqGovernorate" onchange="calculateOrderTotal()"></select>
                 </div>
-            </div>
-
-            <div id="tab-settings" class="admin-tab-content">
-                <div class="custom-card">
-                    <h3>🔐 تغيير كلمة المرور</h3>
-                    <form id="changePasswordForm" class="form-grid" style="max-width: 500px;">
-                        <div class="form-group full-width">
-                            <label for="currentPassword">كلمة المرور الحالية:</label>
-                            <input type="password" id="currentPassword" placeholder="أدخل كلمة المرور الحالية" required>
-                        </div>
-                        <div class="form-group full-width">
-                            <label for="newPassword">كلمة المرور الجديدة:</label>
-                            <input type="password" id="newPassword" placeholder="أدخل كلمة المرور الجديدة" required>
-                        </div>
-                        <button type="submit" class="btn-submit">تغيير كلمة المرور 🔑</button>
-                    </form>
+                <div class="form-group full-width">
+                    <label>العنوان التفصيلي وموقع التسليم:</label>
+                    <textarea id="reqAddress" rows="2" required placeholder="اكتب العنوان بالتفصيل..."></textarea>
                 </div>
-            </div>
-
-        </div>
+                <div class="form-group full-width">
+                    <label>الإجمالي التقديري (شامل الطوب + المشال):</label>
+                    <input type="text" id="estimatedPrice" readonly class="highlight-input">
+                </div>
+                <button type="submit" class="btn-submit full-width">تأكيد إرسال الطلب عبر الواتساب 🚀</button>
+            </form>
+        </section>
 
     </main>
+
+    <!-- لوحة التحكم (الإدارة) -->
+    <main id="adminPortal" class="container" style="display: none;">
+        
+        <!-- إدارة الأسعار -->
+        <section id="tabPrices" class="admin-tab-content active-tab">
+            <h3>🔨 إضافة نوع طوب جديد</h3>
+            <form id="addNewBrickForm" class="custom-form">
+                <input type="text" id="newBrickName" placeholder="اسم نوع الطوب" required>
+                <input type="number" id="newBrickPrice" placeholder="السعر لكل ألف" required>
+                <input type="text" id="newBrickSize" placeholder="المقاس (مثال: 25×12×6)">
+                <button type="submit" class="btn-submit">إضافة للكتالوج ➕</button>
+            </form>
+            <hr>
+            <h3>✏️ تعديل أسعار ومواصفات الكتالوج</h3>
+            <div id="adminPriceControls"></div>
+        </section>
+
+        <!-- المشال والمحافظات -->
+        <section id="tabFreight" class="admin-tab-content">
+            <h3>🚚 إضافة أو تعديل محافظة</h3>
+            <form id="addNewGovForm" class="custom-form">
+                <input type="text" id="newGovName" placeholder="اسم المحافظة" required>
+                <input type="number" id="newGovFreight" placeholder="تكلفة المشال لكل ألف" required>
+                <button type="submit" class="btn-submit">حفظ المحافظة 📍</button>
+            </form>
+            <hr>
+            <h3>تعديل وحذف المحافظات</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>المحافظة</th>
+                        <th>سعر المشال / ألف</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="adminFreightTableBody"></tbody>
+            </table>
+        </section>
+
+        <!-- إدارة الطلبات -->
+        <section id="tabOrders" class="admin-tab-content">
+            <div class="stats-cards">
+                <div class="card">إجمالي الطلبات: <strong id="totalOrdersCount">0</strong></div>
+                <div class="card">إجمالي القيمة: <strong id="totalRevenue">0 ج.م</strong></div>
+            </div>
+            <h3>📋 قائمة الطلبات الواردة</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>رقم الأوردر</th>
+                        <th>اسم العميل / المهندس</th>
+                        <th>التليفون</th>
+                        <th>الطلب والكمية</th>
+                        <th>المحافظة والعنوان</th>
+                        <th>الإجمالي</th>
+                        <th>الحالة</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody id="adminOrdersTableBody"></tbody>
+            </table>
+        </section>
+
+        <!-- إعدادات الحساب -->
+        <section id="tabSettings" class="admin-tab-content">
+            <h3>🔐 تغيير بيانات الدخول</h3>
+            <form id="changePasswordForm" class="custom-form">
+                <div class="form-group">
+                    <label>اسم المستخدم الجديد:</label>
+                    <input type="text" id="newUsername" placeholder="اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور الحالية:</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور الجديدة:</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">تحديث البيانات 💾</button>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Modal تسجيل دخول الإدارة -->
+    <div id="adminAuthModal" class="cert-modal">
+        <div class="modal-card">
+            <h3>تسجيل دخول لوحة التحكم</h3>
+            <form id="loginForm">
+                <input type="text" id="loginUsername" placeholder="اسم المستخدم" required>
+                <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
+                <button type="submit" class="btn-submit">دخول</button>
+                <button type="button" class="btn-submit btn-cancel" onclick="closeAdminModal()">إلغاء</button>
+            </form>
+        </div>
+    </div>
 
     <script src="main.js"></script>
 </body>
