@@ -1,237 +1,39 @@
 
-/* الإعدادات العامة */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+body { background: #f8fafc; color: #1e293b; direction: rtl; line-height: 1.5; }
+.container { width: 92%; max-width: 1100px; margin: 0 auto; }
+.section { padding: 30px 0; border-bottom: 1px solid #e2e8f0; }
+.bg-light { background: #ffffff; padding: 25px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 
-body {
-    background-color: #f4f6f9;
-    color: #333;
-    line-height: 1.6;
-    direction: rtl;
-}
+.main-header { background: #0f172a; color: #fff; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+.header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.logo-container { display: flex; align-items: center; gap: 10px; }
+.site-logo { height: 40px; width: auto; }
+.main-header nav a { color: #94a3b8; text-decoration: none; margin-right: 15px; font-weight: 600; }
+.main-header nav a:hover { color: #38bdf8; }
 
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+.catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 15px; }
+.brick-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+.brick-img { width: 100%; height: 160px; object-fit: cover; background: #cbd5e1; }
+.brick-info { padding: 15px; }
+.brick-info .price { color: #dc2626; font-weight: bold; margin-top: 5px; }
 
-.section {
-    padding: 40px 0;
-}
+.cert-grid { margin-top: 15px; }
+.cert-card { background: #f1f5f9; padding: 15px; border-radius: 8px; text-align: center; }
+.pdf-viewer { width: 100%; height: 220px; border: 1px solid #cbd5e1; margin: 10px 0; border-radius: 6px; }
+.btn-pdf { display: inline-block; padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; }
 
-.bg-light {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 30px;
-    margin: 20px 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
+.form-box { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; max-width: 500px; margin: 15px auto 0; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; margin-bottom: 4px; font-weight: 600; }
+.form-group input, .form-group select, .admin-card input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 8px; }
+.btn-submit { width: 100%; padding: 12px; background: #16a34a; color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+.btn-admin { width: 100%; padding: 10px; background: #0f172a; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-/* الهيدر واللوجو */
-.main-header {
-    background-color: #1e293b;
-    color: #fff;
-    padding: 15px 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 15px; }
+.admin-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; }
+.data-list { list-style: none; margin-top: 10px; }
+.data-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #cbd5e1; }
+.btn-del { background: #ef4444; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
 
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.site-logo {
-    height: 50px;
-    width: auto;
-    object-fit: contain;
-}
-
-.main-header h1 {
-    font-size: 1.5rem;
-    color: #f8fafc;
-}
-
-.main-header nav a {
-    color: #cbd5e1;
-    text-decoration: none;
-    margin-right: 15px;
-    font-weight: 500;
-    transition: color 0.3s;
-}
-
-.main-header nav a:hover {
-    color: #38bdf8;
-}
-
-/* الكتالوج وكروت المنتجات */
-.catalog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-    margin-top: 20px;
-}
-
-.brick-card {
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.brick-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
-
-.brick-img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    background-color: #e2e8f0;
-}
-
-.brick-info {
-    padding: 15px;
-}
-
-.brick-info h3 {
-    margin-bottom: 8px;
-    color: #0f172a;
-}
-
-.brick-info .price {
-    color: #dc2626;
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-top: 8px;
-}
-
-/* قسم شهادات الـ PDF */
-.cert-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.cert-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.pdf-viewer {
-    width: 100%;
-    height: 250px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    margin: 15px 0;
-}
-
-.btn-pdf {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #0284c7;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.btn-pdf:hover {
-    background-color: #0369a1;
-}
-
-/* النماذج والإدخال */
-.form-box {
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    max-width: 600px;
-    margin: 20px auto 0;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 1rem;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 12px;
-    background-color: #16a34a;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-submit:hover {
-    background-color: #15803d;
-}
-
-.btn-danger {
-    background-color: #ef4444;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.btn-danger:hover {
-    background-color: #dc2626;
-}
-
-/* الإشعارات السريعة (Toast) */
-.toast-msg {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #16a34a;
-    color: #ffffff;
-    padding: 12px 24px;
-    border-radius: 8px;
-    z-index: 9999;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
+.toast-msg { position: fixed; bottom: 20px; right: 20px; background: #16a34a; color: #fff; padding: 10px 20px; border-radius: 6px; font-weight: bold; z-index: 1000; }
