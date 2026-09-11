@@ -1,17 +1,12 @@
-
-// 1. إعدادات Firebase (استبدل الرابط أدناه برابط Realtime Database الخاص بك)
-const firebaseConfig = {
-    databaseURL: "https://el-ammar-egypt-default-rtdb.firebaseio.com"
-};
-
-// تهيئة التوصيل بـ Firebase
-if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = (typeof firebase !== 'undefined') ? firebase.database() : null;
+const FIREBASE_DB_URL = "ضع_رابط_قاعدة_البيانات_هنا"; // مثال: https://xxx-default-rtdb.firebaseio.com/
 const WHATSAPP_NUMBER = "201143348433";
 
-// 2. دالة إظهار إشعارات سريعة (Toast)
+// التهيئة الأكيدة
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
+}
+const db = (typeof firebase !== 'undefined') ? firebase.database() : null;
+
 function showToast(msg) {
     const toast = document.createElement("div");
     toast.className = "toast-msg";
@@ -20,178 +15,144 @@ function showToast(msg) {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// 3. تشغيل الدوال عند تحميل الصفحة
 document.addEventListener("DOMContentLoaded", () => {
     if (!db) {
-        console.error("لم يتم الاتصال بـ Firebase. تحقق من استدعاء المكتبات ورابط قاعدة البيانات.");
+        alert("لم يتم الربط مع Firebase! تأكد من وضع الرابط في ملف main.js");
         return;
     }
-    loadBricks();
-    loadGovernorates();
-    setupEventListeners();
+    initBricksListener();
+    initGovsListener();
+    setupForms();
 });
 
-// 4. تحميل وعرض أنواع الطوب (مع الصور)
-function loadBricks() {
+function initBricksListener() {
     db.ref('bricks').on('value', (snapshot) => {
-        const data = snapshot.val();
+        const data = snapshot.val() || {};
         const catalogGrid = document.getElementById("catalogGrid");
-        const adminTable = document.getElementById("adminBricksTable");
-        const selectType = document.getElementById("reqType");
+        const adminBricksList = document.getElementById("adminBricksList");
+        const reqTypeSelect = document.getElementById("reqType");
 
         if (catalogGrid) catalogGrid.innerHTML = "";
-        if (adminTable) adminTable.innerHTML = "";
-        if (selectType) selectType.innerHTML = `<option value="">اختر نوع الطوب...</option>`;
+        if (adminBricksList) adminBricksList.innerHTML = "";
+        if (reqTypeSelect) reqTypeSelect.innerHTML = `<option value="">اختر نوع الطوب...</option>`;
 
-        if (data) {
-            Object.keys(data).forEach(key => {
-                const item = data[key];
-                const imgUrl = item.imageUrl || 'https://via.placeholder.com/300x180?text=صورة+الطوب';
+        Object.keys(data).forEach(id => {
+            const item = data[id];
+            const img = item.imageUrl || 'https://via.placeholder.com/300x180?text=طوب+العمار+مصر';
 
-                // العرض في الكتالوج للزوار
-                if (catalogGrid) {
-                    catalogGrid.innerHTML += `
-                        <div class="brick-card">
-                            <img src="${imgUrl}" alt="${item.name}" class="brick-img">
-                            <div class="brick-info">
-                                <h3>${item.name}</h3>
-                                <p>المقاس: ${item.size || 'قياسي'}</p>
-                                <p class="price">السعر: ${item.price} ج.م / ألف</p>
-                            </div>
-                        </div>`;
-                }
+            if (catalogGrid) {
+                catalogGrid.innerHTML += `
+                    <div class="brick-card">
+                        <img src="${img}" alt="${item.name}" class="brick-img">
+                        <div class="brick-info">
+                            <h3>${item.name}</h3>
+                            <p>المقاس: ${item.size || 'قياسي'}</p>
+                            <p class="price">${item.price} ج.م / ألف</p>
+                        </div>
+                    </div>`;
+            }
 
-                // العرض في لوحة التحكم
-                if (adminTable) {
-                    adminTable.innerHTML += `
-                        <tr>
-                            <td><img src="${imgUrl}" style="width:50px; height:35px; object-fit:cover; border-radius:4px;"></td>
-                            <td>${item.name}</td>
-                            <td>${item.size || '-'}</td>
-                            <td>${item.price} ج.م</td>
-                            <td><button onclick="deleteBrick('${key}')" class="btn-danger">حذف</button></td>
-                        </tr>`;
-                }
+            if (adminBricksList) {
+                adminBricksList.innerHTML += `
+                    <li>
+                        <span>${item.name} - ${item.price} ج.م</span>
+                        <button onclick="deleteItem('bricks', '${id}')" class="btn-del">حذف</button>
+                    </li>`;
+            }
 
-                // العرض في قوائم الاختيار للطلب
-                if (selectType) {
-                    selectType.innerHTML += `<option value="${item.name}">${item.name}</option>`;
-                }
-            });
-        }
+            if (reqTypeSelect) {
+                reqTypeSelect.innerHTML += `<option value="${item.name}">${item.name}</option>`;
+            }
+        });
     });
 }
 
-// 5. تحميل وعرض المحافظات
-function loadGovernorates() {
+function initGovsListener() {
     db.ref('governorates').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const adminGovTable = document.getElementById("adminGovTable");
-        const selectGov = document.getElementById("reqGovernorate");
+        const data = snapshot.val() || {};
+        const adminGovList = document.getElementById("adminGovList");
+        const reqGovSelect = document.getElementById("reqGovernorate");
 
-        if (adminGovTable) adminGovTable.innerHTML = "";
-        if (selectGov) selectGov.innerHTML = `<option value="">اختر المحافظة...</option>`;
+        if (adminGovList) adminGovList.innerHTML = "";
+        if (reqGovSelect) reqGovSelect.innerHTML = `<option value="">اختر المحافظة...</option>`;
 
-        if (data) {
-            Object.keys(data).forEach(key => {
-                const item = data[key];
+        Object.keys(data).forEach(id => {
+            const item = data[id];
 
-                if (adminGovTable) {
-                    adminGovTable.innerHTML += `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.price} ج.م</td>
-                            <td><button onclick="deleteGovernorate('${key}')" class="btn-danger">حذف</button></td>
-                        </tr>`;
-                }
+            if (adminGovList) {
+                adminGovList.innerHTML += `
+                    <li>
+                        <span>${item.name} (${item.price} ج.م)</span>
+                        <button onclick="deleteItem('governorates', '${id}')" class="btn-del">حذف</button>
+                    </li>`;
+            }
 
-                if (selectGov) {
-                    selectGov.innerHTML += `<option value="${item.name}">${item.name}</option>`;
-                }
-            });
-        }
+            if (reqGovSelect) {
+                reqGovSelect.innerHTML += `<option value="${item.name}">${item.name}</option>`;
+            }
+        });
     });
 }
 
-// 6. أحداث النماذج والإضافة
-function setupEventListeners() {
-    // إضافة طوب جديد (يدعم رابط الصورة)
+function setupForms() {
     const addBrickForm = document.getElementById("addBrickForm");
     if (addBrickForm) {
         addBrickForm.addEventListener("submit", (e) => {
             e.preventDefault();
-            const name = document.getElementById("brickName")?.value;
-            const size = document.getElementById("brickSize")?.value || "";
-            const price = document.getElementById("brickPrice")?.value;
-            const imageUrl = document.getElementById("brickImage")?.value || "";
+            const name = document.getElementById("brickName").value;
+            const size = document.getElementById("brickSize").value;
+            const price = document.getElementById("brickPrice").value;
+            const imageUrl = document.getElementById("brickImage").value;
 
-            if (name && price) {
-                db.ref('bricks').push({ name, size, price, imageUrl }).then(() => {
-                    showToast("تمت إضافة نوع الطوب بنجاح ✨");
-                    addBrickForm.reset();
-                }).catch(err => alert("خطأ في الإضافة: " + err.message));
-            }
+            db.ref('bricks').push({ name, size, price, imageUrl }).then(() => {
+                showToast("تمت إضافة الطوب بنجاح ✅");
+                addBrickForm.reset();
+            }).catch(err => alert("خطأ: " + err.message));
         });
     }
 
-    // إضافة محافظة جديدة
     const addGovForm = document.getElementById("addGovForm");
     if (addGovForm) {
         addGovForm.addEventListener("submit", (e) => {
             e.preventDefault();
-            const name = document.getElementById("govName")?.value;
-            const price = document.getElementById("govPrice")?.value;
+            const name = document.getElementById("govName").value;
+            const price = document.getElementById("govPrice").value;
 
-            if (name && price) {
-                db.ref('governorates').push({ name, price }).then(() => {
-                    showToast("تمت إضافة المحافظة بنجاح ✨");
-                    addGovForm.reset();
-                }).catch(err => alert("خطأ في الإضافة: " + err.message));
-            }
+            db.ref('governorates').push({ name, price }).then(() => {
+                showToast("تمت إضافة المحافظة بنجاح ✅");
+                addGovForm.reset();
+            }).catch(err => alert("خطأ: " + err.message));
         });
     }
 
-    // إرسال الطلب وحفظه + التوجيه للواتساب
     const clientOrderForm = document.getElementById("clientOrderForm");
     if (clientOrderForm) {
         clientOrderForm.addEventListener("submit", (e) => {
             e.preventDefault();
-            const payload = {
-                name: document.getElementById("reqName")?.value || "",
-                phone: document.getElementById("reqPhone")?.value || "",
-                type: document.getElementById("reqType")?.value || "",
-                qty: document.getElementById("reqQty")?.value || "",
-                governorate: document.getElementById("reqGovernorate")?.value || "",
-                address: document.getElementById("reqAddress")?.value || "",
-                date: new Date().toLocaleString('ar-EG')
-            };
+            const name = document.getElementById("reqName").value;
+            const phone = document.getElementById("reqPhone").value;
+            const type = document.getElementById("reqType").value;
+            const qty = document.getElementById("reqQty").value;
+            const gov = document.getElementById("reqGovernorate").value;
+            const address = document.getElementById("reqAddress").value;
 
-            db.ref('orders').push(payload).then(() => {
-                const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
-                    `*اسم العميل:* ${payload.name}%0A` +
-                    `*التليفون:* ${payload.phone}%0A` +
-                    `*النوع:* ${payload.type}%0A` +
-                    `*الكمية:* ${payload.qty} ألف طوبة%0A` +
-                    `*المحافظة:* ${payload.governorate}%0A` +
-                    `*العنوان:* ${payload.address}`;
+            const msg = `*طلب توريد طوب جديد - العمار مصر 🧱*%0A%0A` +
+                        `*الاسم:* ${name}%0A` +
+                        `*الهاتف:* ${phone}%0A` +
+                        `*النوع:* ${type}%0A` +
+                        `*الكمية:* ${qty} ألف طوبة%0A` +
+                        `*المحافظة:* ${gov}%0A` +
+                        `*العنوان:* ${address}`;
 
-                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-                showToast("تم تسجيل طلبك وتحويلك للواتساب ✨");
-                clientOrderForm.reset();
-            }).catch(err => alert("خطأ في حفظ الطلب: " + err.message));
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+            showToast("جاري تحويلك للواتساب... 💬");
+            clientOrderForm.reset();
         });
     }
 }
 
-// 7. دوال الحذف
-function deleteBrick(id) {
-    if (confirm("هل أنت متأكد من حذف هذا النوع؟")) {
-        db.ref(`bricks/${id}`).remove().then(() => showToast("تم الحذف بنجاح"));
+window.deleteItem = function(path, id) {
+    if (confirm("هل أنت متأكد من الحذف؟")) {
+        db.ref(`${path}/${id}`).remove().then(() => showToast("تم الحذف بنجاح ✅"));
     }
-}
-
-function deleteGovernorate(id) {
-    if (confirm("هل أنت متأكد من حذف هذه المحافظة؟")) {
-        db.ref(`governorates/${id}`).remove().then(() => showToast("تم الحذف بنجاح"));
-    }
-}
+};
