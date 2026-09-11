@@ -1,8 +1,17 @@
 
-const API_URL = "https://backend-yaft.onrender.com/api";
+// إعدادات Firebase المباشرة
+const firebaseConfig = {
+    databaseURL: "https://el-ammar-egypt-default-rtdb.firebaseio.com"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
 const WHATSAPP_NUMBER = "201143348433";
 
-// البيانات الافتراضية الشاملة (الـ 27 محافظة وأنواع الطوب بالمقاسات)
+// البيانات الافتراضية للـ 27 محافظة وأنواع الطوب
 const defaultBricks = {
     "طوب أحمر مفرغ": { price: 1200, size: "25×12×6" },
     "طوب أحمر مصمت": { price: 1400, size: "25×12×6" },
@@ -13,39 +22,19 @@ const defaultBricks = {
 };
 
 const defaultGovs = {
-    "القاهرة": 300,
-    "الجيزة": 300,
-    "القليوبية": 350,
-    "الإسكندرية": 500,
-    "الشرقية": 400,
-    "الدقهلية": 450,
-    "المنوفية": 400,
-    "الغربية": 450,
-    "كفر الشيخ": 500,
-    "الفيوم": 450,
-    "بني سويف": 500,
-    "المنيا": 600,
-    "أسيوط": 700,
-    "سوهاج": 800,
-    "قنا": 900,
-    "الأقصر": 950,
-    "أسوان": 1000,
-    "البحيرة": 450,
-    "الإسماعيلية": 450,
-    "السويس": 450,
-    "بورسعيد": 500,
-    "دمياط": 500,
-    "مطروح": 800,
-    "البحر الأحمر": 900,
-    "الوادي الجديد": 1000,
-    "شمال سيناء": 800,
-    "جنوب سيناء": 900
+    "القاهرة": 300, "الجيزة": 300, "القليوبية": 350, "الإسكندرية": 500,
+    "الشرقية": 400, "الدقهلية": 450, "المنوفية": 400, "الغربية": 450,
+    "كفر الشيخ": 500, "الفيوم": 450, "بني سويف": 500, "المنيا": 600,
+    "أسيوط": 700, "سوهاج": 800, "قنا": 900, "الأقصر": 950,
+    "أسوان": 1000, "البحيرة": 450, "الإسماعيلية": 450, "السويس": 450,
+    "بورسعيد": 500, "دمياط": 500, "مطروح": 800, "البحر الأحمر": 900,
+    "الوادي الجديد": 1000, "شمال سيناء": 800, "جنوب سيناء": 900
 };
 
 let currentBricks = {};
 let currentGovs = {};
+let adminCreds = { username: "admin", password: "123" };
 
-// 1. Toast
 function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');
     if (!container) return;
@@ -60,17 +49,12 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// 2. معاينة صور الشهادات
 function openCertModal(src) {
     document.getElementById("certModal").style.display = "flex";
     document.getElementById("imgModalTarget").src = src;
 }
+function closeCertModal() { document.getElementById("certModal").style.display = "none"; }
 
-function closeCertModal() {
-    document.getElementById("certModal").style.display = "none";
-}
-
-// 3. التنقل والصفحات
 function showSection(sectionId, btn) {
     document.querySelectorAll(".portal-page").forEach(p => p.classList.remove("active-page"));
     document.querySelectorAll("#clientNav .nav-link").forEach(b => b.classList.remove("active"));
@@ -98,60 +82,55 @@ function showAdminDashboard() {
 }
 
 function logoutAdmin() {
-    localStorage.removeItem('adminToken');
+    localStorage.removeItem('isLoggedIn');
     document.getElementById("adminPortal").style.display = "none";
     document.getElementById("adminNav").style.display = "none";
     document.getElementById("clientPortal").style.display = "block";
     document.getElementById("clientNav").style.display = "flex";
-    showToast("تم الخروج للواجهة العامة 👁️");
+    showToast("تم الخروج 👁️");
 }
 
-// 4. جلب البيانات من السيرفر أو استخدام البيانات الافتراضية الـ 27 محافظة
+// الاستماع للبيانات اللحظية من Firebase
 document.addEventListener("DOMContentLoaded", () => {
-    fetchData();
-    if(localStorage.getItem('adminToken')) showAdminDashboard();
-});
+    // جلب أسعار الطوب
+    db.ref('bricks').on('value', snapshot => {
+        const val = snapshot.val();
+        if(val) { currentBricks = val; } 
+        else { db.ref('bricks').set(defaultBricks); currentBricks = defaultBricks; }
+        renderClientViews();
+    });
 
-async function fetchData() {
-    try {
-        const [resB, resG] = await Promise.all([
-            fetch(`${API_URL}/bricks`),
-            fetch(`${API_URL}/governorates`)
-        ]);
-        
-        const bricksArr = await resB.json();
-        const govsArr = await resG.json();
+    // جلب المحافظات
+    db.ref('governorates').on('value', snapshot => {
+        const val = snapshot.val();
+        if(val) { currentGovs = val; } 
+        else { db.ref('governorates').set(defaultGovs); currentGovs = defaultGovs; }
+        renderClientViews();
+    });
 
-        currentBricks = {};
-        if (Array.isArray(bricksArr) && bricksArr.length > 0) {
-            bricksArr.forEach(b => currentBricks[b.name] = { price: b.price, size: b.size });
-        } else {
-            currentBricks = { ...defaultBricks };
-        }
+    // جلب بيانات الإدارة
+    db.ref('adminCredentials').on('value', snapshot => {
+        const val = snapshot.val();
+        if(val) { adminCreds = val; } 
+        else { db.ref('adminCredentials').set(adminCreds); }
+    });
 
-        currentGovs = {};
-        if (Array.isArray(govsArr) && govsArr.length > 0) {
-            govsArr.forEach(g => currentGovs[g.name] = g.freight);
-        } else {
-            currentGovs = { ...defaultGovs };
-        }
-
-    } catch (err) {
-        // في حالة وجود خطأ أو عدم اتصال، استخدم القائمة الافتراضية الـ 27 محافظة وأنواع الطوب
-        currentBricks = { ...defaultBricks };
-        currentGovs = { ...defaultGovs };
+    if(localStorage.getItem('isLoggedIn') === 'true') {
+        showAdminDashboard();
     }
-
-    renderClientViews();
-}
+});
 
 function renderClientViews() {
     const grid = document.getElementById("pricesDisplayGrid");
+    const catalogGovBody = document.getElementById("catalogFreightTableBody");
     const typeSelect = document.getElementById("reqType");
     const govSelect = document.getElementById("reqGovernorate");
 
     if(!grid) return;
-    grid.innerHTML = ""; typeSelect.innerHTML = ""; govSelect.innerHTML = "";
+    grid.innerHTML = ""; 
+    if(typeSelect) typeSelect.innerHTML = ""; 
+    if(govSelect) govSelect.innerHTML = "";
+    if(catalogGovBody) catalogGovBody.innerHTML = "";
 
     for (let type in currentBricks) {
         const b = currentBricks[type];
@@ -162,13 +141,20 @@ function renderClientViews() {
                 <div class="price-tag-big">سعر الألف طوبة: ${Number(b.price).toLocaleString()} ج.م</div>
             </div>
         `;
-        typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+        if(typeSelect) typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
     }
 
     for (let gov in currentGovs) {
-        govSelect.innerHTML += `<option value="${gov}">${gov} (مشال: ${currentGovs[gov]} ج.م/ألف)</option>`;
+        if(govSelect) govSelect.innerHTML += `<option value="${gov}">${gov} (مشال: ${currentGovs[gov]} ج.م/ألف)</option>`;
+        if(catalogGovBody) {
+            catalogGovBody.innerHTML += `
+                <tr>
+                    <td><strong>📍 ${gov}</strong></td>
+                    <td><span class="price-tag-small">${Number(currentGovs[gov]).toLocaleString()} ج.م</span></td>
+                </tr>
+            `;
+        }
     }
-
     calculateOrderTotal();
 }
 
@@ -186,10 +172,9 @@ function calculateOrderTotal() {
     }
 }
 
-// 5. إرسال الطلب عبر الواتساب وتسجيل الأوردر
-document.getElementById("clientOrderForm")?.addEventListener("submit", async (e) => {
+// تسجيل أوردر جديد وحفظه في Firebase + واتساب
+document.getElementById("clientOrderForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
-    
     const payload = {
         name: document.getElementById("reqName").value,
         phone: document.getElementById("reqPhone").value,
@@ -197,88 +182,70 @@ document.getElementById("clientOrderForm")?.addEventListener("submit", async (e)
         qty: document.getElementById("reqQty").value,
         governorate: document.getElementById("reqGovernorate").value,
         address: document.getElementById("reqAddress").value,
-        total: document.getElementById("estimatedPrice").value
+        total: document.getElementById("estimatedPrice").value,
+        date: new Date().toLocaleString('ar-EG')
     };
 
-    try {
-        const res = await fetch(`${API_URL}/orders`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
+    db.ref('orders').push(payload).then(() => {
         const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
-            `*أوردر رقم:* ${data.orderId || 'جديد'}%0A` +
-            `*اسم المهندس/العميل:* ${payload.name}%0A` +
-            `*رقم التليفون:* ${payload.phone}%0A` +
-            `*نوع الطوب:* ${payload.type}%0A` +
-            `*الكمية المطلوبة:* ${payload.qty} طوبة%0A` +
-            `*المافظة:* ${payload.governorate}%0A` +
+            `*اسم العميل:* ${payload.name}%0A` +
+            `*التليفون:* ${payload.phone}%0A` +
+            `*النوع:* ${payload.type}%0A` +
+            `*الكمية:* ${payload.qty} طوبة%0A` +
+            `*المحافظة:* ${payload.governorate}%0A` +
             `*العنوان:* ${payload.address}%0A` +
-            `*الإجمالي:* ${payload.total}%0A%0A` +
-            `يرجى التأكيد والمتابعة!`;
+            `*الإجمالي:* ${payload.total}`;
 
         window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-        showToast(`تم تسجيل أوردر بنجاح ✨`);
+        showToast("تم تسجيل طلبك بنجاح ✨");
         e.target.reset();
-    } catch(err) {
-        showToast("عذراً، فشل إرسال الطلب", "error");
-    }
+    });
 });
 
-// 6. لوحة التحكم والإضافة والتعديل
-async function handleAddNewBrick(e) {
+// إضافة وتعديل البيانات وحفظها فوراً في Firebase
+function handleAddNewBrick(e) {
     e.preventDefault();
     const name = document.getElementById("newBrickName").value;
     const price = document.getElementById("newBrickPrice").value;
     const size = document.getElementById("newBrickSize").value;
-    currentBricks[name] = { price, size };
-    await saveBrickData(name, price, size);
-    e.target.reset();
+    db.ref(`bricks/${name}`).set({ price, size }).then(() => {
+        showToast("تم إضافة الطوب للكتالوج ✅");
+        e.target.reset();
+    });
 }
 
-async function handleAddNewGov(e) {
+function handleAddNewGov(e) {
     e.preventDefault();
     const name = document.getElementById("newGovName").value;
     const freight = document.getElementById("newGovFreight").value;
-    currentGovs[name] = freight;
-    await saveGovData(name, freight);
-    e.target.reset();
+    db.ref(`governorates/${name}`).set(freight).then(() => {
+        showToast("تم إضافة المحافظة ✅");
+        e.target.reset();
+    });
 }
 
-async function saveBrickData(name, price, size) {
-    currentBricks[name] = { price, size };
-    try {
-        await fetch(`${API_URL}/bricks`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('adminToken')}`},
-            body: JSON.stringify({ name, price, size })
-        });
-    } catch(e){}
-    showToast("تم تحديث الكتالوج ✅");
-    renderClientViews();
-    loadAdminData();
+function saveBrickData(name, price, size) {
+    db.ref(`bricks/${name}`).set({ price, size }).then(() => {
+        showToast("تم التحديث بنجاح ✅");
+    });
 }
 
-async function saveGovData(name, freight) {
-    currentGovs[name] = freight;
-    try {
-        await fetch(`${API_URL}/governorates`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('adminToken')}`},
-            body: JSON.stringify({ name, freight })
-        });
-    } catch(e){}
-    showToast("تم تحديث سعر المشال ✅");
-    renderClientViews();
-    loadAdminData();
+function saveGovData(name, freight) {
+    db.ref(`governorates/${name}`).set(freight).then(() => {
+        showToast("تم تعديل المشال ✅");
+    });
 }
 
-async function loadAdminData() {
-    const token = localStorage.getItem('adminToken');
-    
-    // بناء تحكم الطوب في الإدارة
+function deleteBrick(name) {
+    db.ref(`bricks/${name}`).remove().then(() => showToast("تم الحذف ❌", "error"));
+}
+
+function deleteGov(name) {
+    db.ref(`governorates/${name}`).remove().then(() => showToast("تم الحذف ❌", "error"));
+}
+
+function loadAdminData() {
+    // بناء التحكم للطوب
     const pContainer = document.getElementById("adminPriceControls");
     if(pContainer) {
         pContainer.innerHTML = "";
@@ -288,9 +255,9 @@ async function loadAdminData() {
                 <div class="form-group full-width" style="margin-bottom:10px;">
                     <label style="color:var(--accent); font-weight:bold;">${type}</label>
                     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <input type="number" id="price_${type}" value="${b.price}" placeholder="السعر">
-                        <input type="text" id="size_${type}" value="${b.size||''}" placeholder="المقاس">
-                        <button class="btn-submit" onclick="saveBrickData('${type}', document.getElementById('price_${type}').value, document.getElementById('size_${type}').value)">حفظ التعديل 💾</button>
+                        <input type="number" id="price_${type}" value="${b.price}">
+                        <input type="text" id="size_${type}" value="${b.size||''}">
+                        <button class="btn-submit" onclick="saveBrickData('${type}', document.getElementById('price_${type}').value, document.getElementById('size_${type}').value)">حفظ 💾</button>
                         <button class="btn-submit btn-cancel" onclick="deleteBrick('${type}')">حذف ❌</button>
                     </div>
                 </div>
@@ -298,7 +265,7 @@ async function loadAdminData() {
         }
     }
 
-    // بناء جدول المحافظات الـ 27 في الإدارة
+    // جدول المحافظات الـ 27
     const gBody = document.getElementById("adminFreightTableBody");
     if(gBody) {
         gBody.innerHTML = "";
@@ -316,96 +283,57 @@ async function loadAdminData() {
         }
     }
 
-    // جدول الطلبات
-    try {
-        const res = await fetch(`${API_URL}/orders`, { headers: {'Authorization': `Bearer ${token}`} });
-        const orders = await res.json();
+    // جدول الطلبات الواردة
+    db.ref('orders').on('value', snapshot => {
+        const orders = snapshot.val();
         const oBody = document.getElementById("adminOrdersTableBody");
         if(oBody) {
             oBody.innerHTML = "";
-            let rev = 0;
-
-            if(Array.isArray(orders)) {
-                orders.forEach(o => {
-                    rev += parseFloat(o.total?.replace(/[^0-9.-]+/g,"")) || 0;
+            let count = 0;
+            if(orders) {
+                for(let key in orders) {
+                    count++;
+                    const o = orders[key];
                     oBody.innerHTML += `
                         <tr>
-                            <td><strong>أوردر ${o.id}</strong></td>
                             <td>${o.name}</td>
                             <td>${o.phone}</td>
                             <td>${o.type} (${o.qty})</td>
                             <td>${o.governorate} - ${o.address}</td>
                             <td>${o.total}</td>
-                            <td>${o.status || 'معلق'}</td>
-                            <td><button class="btn-submit btn-cancel" onclick="deleteOrder(${o.id})">حذف</button></td>
+                            <td><button class="btn-submit btn-cancel" onclick="db.ref('orders/${key}').remove()">حذف</button></td>
                         </tr>
                     `;
-                });
-                document.getElementById("totalOrdersCount").innerText = orders.length;
-                document.getElementById("totalRevenue").innerText = rev.toLocaleString() + " ج.م";
+                }
             }
+            document.getElementById("totalOrdersCount").innerText = count;
         }
-    } catch(err) {}
-}
-
-async function deleteBrick(name) {
-    delete currentBricks[name];
-    try {
-        await fetch(`${API_URL}/bricks/${name}`, {
-            method: 'DELETE',
-            headers: {'Authorization': `Bearer ${localStorage.getItem('adminToken')}`}
-        });
-    } catch(e){}
-    showToast("تم الحذف بنجاح", "error");
-    renderClientViews();
-    loadAdminData();
-}
-
-async function deleteGov(name) {
-    delete currentGovs[name];
-    try {
-        await fetch(`${API_URL}/governorates/${name}`, {
-            method: 'DELETE',
-            headers: {'Authorization': `Bearer ${localStorage.getItem('adminToken')}`}
-        });
-    } catch(e){}
-    showToast("تم حذف المحافظة", "error");
-    renderClientViews();
-    loadAdminData();
-}
-
-async function deleteOrder(id) {
-    try {
-        await fetch(`${API_URL}/orders/${id}`, {
-            method: 'DELETE',
-            headers: {'Authorization': `Bearer ${localStorage.getItem('adminToken')}`}
-        });
-    } catch(e){}
-    showToast("تم حذف الأوردر", "error");
-    loadAdminData();
+    });
 }
 
 // تسجيل الدخول
-document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+document.getElementById('loginForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const u = document.getElementById('loginUsername').value;
     const p = document.getElementById('loginPassword').value;
 
-    try {
-        const res = await fetch(`${API_URL}/admin/login`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ username: u, password: p })
-        });
-        const data = await res.json();
-        if(res.ok) {
-            localStorage.setItem('adminToken', data.token);
-            showToast("تم تسجيل الدخول بنجاح! ✨");
-            showAdminDashboard();
-        } else {
-            showToast(data.message || "بيانات الدخول غير صحيحة", "error");
-        }
-    } catch(err) {
-        showToast("فشل الاتصال بالسيرفر", "error");
+    if(u === adminCreds.username && p === adminCreds.password) {
+        localStorage.setItem('isLoggedIn', 'true');
+        showToast("تم تسجيل الدخول بنجاح! ✨");
+        showAdminDashboard();
+    } else {
+        showToast("اسم المستخدم أو كلمة المرور غير صحيحة", "error");
     }
+});
+
+// تغيير اسم المستخدم والباسورد وحفظهم الدائم
+document.getElementById('changePasswordForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newU = document.getElementById('newUsername').value;
+    const newP = document.getElementById('newPassword').value;
+
+    db.ref('adminCredentials').set({ username: newU, password: newP }).then(() => {
+        showToast("تم تغيير بيانات الدخول بنجاح على السيرفر! 💾");
+        e.target.reset();
+    });
 });
