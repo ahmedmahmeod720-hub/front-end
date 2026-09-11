@@ -8,88 +8,109 @@
 </head>
 <body>
 
-    <!-- الهيدر واللوجو -->
     <header class="main-header">
         <div class="container header-content">
             <div class="logo-container">
-                <!-- حط مسار اللوجو بتاعك هنا مكان logo.png -->
-                <img src="logo.png" alt="لوجو العمار مصر" class="site-logo">
+                <img src="logo.png" alt="العمار مصر" class="site-logo" onerror="this.style.display='none'">
                 <h1>مؤسسة العمار مصر</h1>
             </div>
             <nav>
                 <a href="#catalog">الكتالوج</a>
-                <a href="#certificates">الشهادات والاعتمادات</a>
+                <a href="#certificates">الشهادات</a>
                 <a href="#order">طلب توريد</a>
-                <a href="#admin" onclick="openAdminModal()">لوحة التحكم</a>
+                <a href="#adminDashboard">لوحة التحكم</a>
             </nav>
         </div>
     </header>
 
-    <!-- قسم كتالوج المنتجات -->
-    <section id="catalog" class="container section">
-        <h2>🧱 كتالوج أنواع الطوب والأسعار</h2>
-        <div id="catalogGrid" class="catalog-grid">
-            <!-- المنتجات بتنزل هنا ديناميكياً مع الصورة والسعر -->
-        </div>
-    </section>
+    <main class="container">
+        <!-- قسم الكتالوج -->
+        <section id="catalog" class="section">
+            <h2>🧱 كتالوج أنواع الطوب والأسعار</h2>
+            <div id="catalogGrid" class="catalog-grid"></div>
+        </section>
 
-    <!-- قسم شهادات الجودة والـ PDF -->
-    <section id="certificates" class="container section bg-light">
-        <h2>📜 شهادات الجودة والاعتمادات الرسمية</h2>
-        <p>يمكنك الاطلاع على شهادات الاختبارات والاعتمادات الرسمية الخاصة بمؤسستنا:</p>
-        
-        <div class="cert-grid">
-            <!-- شهادة 1 -->
-            <div class="cert-card">
-                <h3>شهادة جودة اختبارات الطوب</h3>
-                <p>شهادة اعتماد المواصفات القياسية والجودة.</p>
+        <!-- قسم الشهادات والـ PDF -->
+        <section id="certificates" class="section bg-light">
+            <h2>📜 شهادات الجودة والاعتمادات الرسمية</h2>
+            <div class="cert-grid">
+                <div class="cert-card">
+                    <h3>شهادة الاعتماد والمواصفات القياسية</h3>
+                    <iframe src="cert.pdf" class="pdf-viewer"></iframe>
+                    <a href="cert.pdf" target="_blank" class="btn-pdf">📥 فتح / تحميل ملف الـ PDF</a>
+                </div>
+            </div>
+        </section>
 
-                <!-- لعرض الـ PDF مباشرة داخل الصفحة -->
-                <iframe src="certificates/cert1.pdf" class="pdf-viewer"></iframe>
-                
-                <!-- زرار فتح أو تحميل الـ PDF -->
-                <a href="certificates/cert1.pdf" target="_blank" class="btn-pdf">📥 فتح / تحميل ملف الـ PDF</a>
-            </div>
+        <!-- قسم طلب التوريد -->
+        <section id="order" class="section">
+            <h2>📝 طلب توريد طوب</h2>
+            <form id="clientOrderForm" class="form-box">
+                <div class="form-group">
+                    <label>الاسم بالكامل:</label>
+                    <input type="text" id="reqName" required placeholder="أدخل اسمك">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف:</label>
+                    <input type="tel" id="reqPhone" required placeholder="01xxxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>نوع الطوب:</label>
+                    <select id="reqType" required>
+                        <option value="">اختر النوع...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الكمية (بالألف):</label>
+                    <input type="number" id="reqQty" required min="1" placeholder="مثال: 5">
+                </div>
+                <div class="form-group">
+                    <label>المحافظة:</label>
+                    <select id="reqGovernorate" required>
+                        <option value="">اختر المحافظة...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>العنوان التفصيلي:</label>
+                    <input type="text" id="reqAddress" required placeholder="المركز / القرية / الشارع">
+                </div>
+                <button type="submit" class="btn-submit">إرسال الطلب عبر الواتساب 💬</button>
+            </form>
+        </section>
 
-            <!-- تقدر تكرر الكارت ده لأي شهادة ثانية -->
-        </div>
-    </section>
+        <!-- لوحة التحكم للـ Admin -->
+        <section id="adminDashboard" class="section bg-light">
+            <h2>⚙️ لوحة إدارة الموقع</h2>
+            
+            <div class="admin-grid">
+                <!-- إضافة طوب -->
+                <div class="admin-card">
+                    <h3>إضافة نوع طوب جديد</h3>
+                    <form id="addBrickForm">
+                        <input type="text" id="brickName" placeholder="اسم نوع الطوب" required>
+                        <input type="text" id="brickSize" placeholder="المقاس (اختياري)">
+                        <input type="number" id="brickPrice" placeholder="السعر لكل ألف" required>
+                        <input type="url" id="brickImage" placeholder="رابط صورة الطوب (URL)">
+                        <button type="submit" class="btn-admin">إضافة الطوب</button>
+                    </form>
+                    <h4>الأنواع الحالية:</h4>
+                    <ul id="adminBricksList" class="data-list"></ul>
+                </div>
 
-    <!-- قسم طلب التوريد -->
-    <section id="order" class="container section">
-        <h2>📝 طلب توريد طوب</h2>
-        <form id="clientOrderForm" class="form-box">
-            <div class="form-group">
-                <label>الاسم بالكامل:</label>
-                <input type="text" id="reqName" required placeholder="أدخل اسمك">
+                <!-- إضافة محافظة -->
+                <div class="admin-card">
+                    <h3>إضافة محافظة وسعر النولون</h3>
+                    <form id="addGovForm">
+                        <input type="text" id="govName" placeholder="اسم المحافظة" required>
+                        <input type="number" id="govPrice" placeholder="سعر الشحن/النولون" required>
+                        <button type="submit" class="btn-admin">إضافة المحافظة</button>
+                    </form>
+                    <h4>المحافظات الحالية:</h4>
+                    <ul id="adminGovList" class="data-list"></ul>
+                </div>
             </div>
-            <div class="form-group">
-                <label>رقم الهاتف:</label>
-                <input type="tel" id="reqPhone" required placeholder="01xxxxxxxxx">
-            </div>
-            <div class="form-group">
-                <label>نوع الطوب:</label>
-                <select id="reqType" required>
-                    <option value="">جاري تحميل الأنواع...</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>الكمية (بالألف):</label>
-                <input type="number" id="reqQty" required min="1" placeholder="مثال: 5">
-            </div>
-            <div class="form-group">
-                <label>المحافظة:</label>
-                <select id="reqGovernorate" required>
-                    <option value="">جاري تحميل المحافظات...</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>العنوان التفصيلي:</label>
-                <input type="text" id="reqAddress" required placeholder="المركز / القرية / الشارع">
-            </div>
-            <button type="submit" class="btn-submit">إرسال الطلب عبر الواتساب 💬</button>
-        </form>
-    </section>
+        </section>
+    </main>
 
     <!-- مكتبات Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
