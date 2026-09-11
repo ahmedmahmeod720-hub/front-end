@@ -1,33 +1,36 @@
-// 1. تهيئة Firebase (تأكد من وضع رابط قاعدة البيانات الخاصة بك هنا)
+// 1. إعدادات Firebase - ضع رابط Realtime Database الخاص بك هنا
 const firebaseConfig = {
-    databaseURL: "https://el-ammar-egypt-default-rtdb.firebaseio.com" // استبدله برابطك الحقيقي
+    databaseURL: "https://el-ammar-egypt-default-rtdb.firebaseio.com" // <-- استبدل الرابط ده برابطك الحقيقي من Firebase
 };
 
-if (!firebase.apps.length) {
+// تهيئة التوصيل
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const db = firebase.database();
+const db = (typeof firebase !== 'undefined') ? firebase.database() : null;
 const WHATSAPP_NUMBER = "201143348433";
 
-// 2. حالة تسجيل الدخول المحلية
-let isAdminLoggedIn = false;
-
-// 3. دالة إظهار التنبيهات (Toast)
+// 2. دالة إظهار الرسائل التوضيحية (Toast)
 function showToast(msg) {
     const toast = document.createElement("div");
-    toast.className = "toast-msg";
+    toast.style.cssText = "position:fixed; bottom:20px; right:20px; background:#28a745; color:#fff; padding:12px 24px; border-radius:8px; z-index:9999; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.3);";
     toast.innerText = msg;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
 
-// 4. تحميل المنتجات والمحافظات فور فتح الصفحة
+// 3. تشغيل المكونات بعد تحميل الصفحة
 document.addEventListener("DOMContentLoaded", () => {
+    if (!db) {
+        console.error("Firebase لم يتم تحميله بنجاح، تأكد من روابط المكتبات في ملف HTML");
+        return;
+    }
     loadBricks();
     loadGovernorates();
+    setupEventListeners();
 });
 
-// 5. جلب وعرض أنواع الطوب
+// 4. جلب وعرض أنواع الطوب
 function loadBricks() {
     db.ref('bricks').on('value', (snapshot) => {
         const data = snapshot.val();
@@ -43,28 +46,25 @@ function loadBricks() {
             Object.keys(data).forEach(key => {
                 const item = data[key];
 
-                // عرض في الكتالوج للزوار
                 if (catalogGrid) {
                     catalogGrid.innerHTML += `
-                        <div class="brick-card">
+                        <div class="brick-card" style="border:1px solid #ddd; padding:15px; margin:10px; border-radius:8px; background:#fff;">
                             <h3>${item.name}</h3>
                             <p>المقاس: ${item.size || 'قياسي'}</p>
-                            <p class="price">السعر: ${item.price} ج.م / ألف</p>
+                            <p style="color:#d9534f; font-weight:bold;">السعر: ${item.price} ج.م / ألف</p>
                         </div>`;
                 }
 
-                // عرض في لوحة التحكم
                 if (adminTable) {
                     adminTable.innerHTML += `
                         <tr>
                             <td>${item.name}</td>
                             <td>${item.size || '-'}</td>
                             <td>${item.price} ج.م</td>
-                            <td><button onclick="deleteBrick('${key}')" class="btn-danger">حذف</button></td>
+                            <td><button onclick="deleteBrick('${key}')" style="background:#dc3545; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">حذف</button></td>
                         </tr>`;
                 }
 
-                // إضافة للـ Select في حاسبة الطلب
                 if (selectType) {
                     selectType.innerHTML += `<option value="${item.name}">${item.name}</option>`;
                 }
@@ -73,27 +73,7 @@ function loadBricks() {
     });
 }
 
-// 6. إضافة نوع طوب جديد
-document.getElementById("addBrickForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name = document.getElementById("brickName").value;
-    const size = document.getElementById("brickSize").value;
-    const price = document.getElementById("brickPrice").value;
-
-    db.ref('bricks').push({ name, size, price }).then(() => {
-        showToast("تمت إضافة نوع الطوب بنجاح ✨");
-        e.target.reset();
-    });
-});
-
-// 7. حذف نوع طوب
-function deleteBrick(id) {
-    if (confirm("هل أنت تأكد من حذف هذا النوع؟")) {
-        db.ref(`bricks/${id}`).remove().then(() => showToast("تم الحذف بنجاح"));
-    }
-}
-
-// 8. جلب وعرض المحافظات
+// 5. جلب وعرض المحافظات
 function loadGovernorates() {
     db.ref('governorates').on('value', (snapshot) => {
         const data = snapshot.val();
@@ -112,115 +92,96 @@ function loadGovernorates() {
                         <tr>
                             <td>${item.name}</td>
                             <td>${item.price} ج.م</td>
-                            <td><button onclick="deleteGovernorate('${key}')" class="btn-danger">حذف</button></td>
+                            <td><button onclick="deleteGovernorate('${key}')" style="background:#dc3545; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">حذف</button></td>
                         </tr>`;
                 }
 
                 if (selectGov) {
-                    selectGov.innerHTML += `<option value="${item.name}" data-price="${item.price}">${item.name}</option>`;
+                    selectGov.innerHTML += `<option value="${item.name}">${item.name}</option>`;
                 }
             });
         }
     });
 }
 
-// 9. إضافة محافظة جديدة
-document.getElementById("addGovForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name = document.getElementById("govName").value;
-    const price = document.getElementById("govPrice").value;
+// 6. ربط أزرار الإضافة والتسجيل
+function setupEventListeners() {
+    // إضافة طوب
+    const addBrickForm = document.getElementById("addBrickForm");
+    if (addBrickForm) {
+        addBrickForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("brickName")?.value;
+            const size = document.getElementById("brickSize")?.value || "";
+            const price = document.getElementById("brickPrice")?.value;
 
-    db.ref('governorates').push({ name, price }).then(() => {
-        showToast("تمت إضافة المحافظة بنجاح ✨");
-        e.target.reset();
-    });
-});
+            if (name && price) {
+                db.ref('bricks').push({ name, size, price }).then(() => {
+                    showToast("تمت إضافة نوع الطوب بنجاح ✨");
+                    addBrickForm.reset();
+                }).catch(err => alert("خطأ في الإضافة: " + err.message));
+            }
+        });
+    }
 
-// 10. حذف محافظة
-function deleteGovernorate(id) {
-    if (confirm("هل أنت تأكد من حذف هذه المحافظة؟")) {
-        db.ref(`governorates/${id}`).remove().then(() => showToast("تم الحذف بنجاح"));
+    // إضافة محافظة
+    const addGovForm = document.getElementById("addGovForm");
+    if (addGovForm) {
+        addGovForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("govName")?.value;
+            const price = document.getElementById("govPrice")?.value;
+
+            if (name && price) {
+                db.ref('governorates').push({ name, price }).then(() => {
+                    showToast("تمت إضافة المحافظة بنجاح ✨");
+                    addGovForm.reset();
+                }).catch(err => alert("خطأ في الإضافة: " + err.message));
+            }
+        });
+    }
+
+    // إرسال الطلب وحفظه + توجيه للواتساب
+    const clientOrderForm = document.getElementById("clientOrderForm");
+    if (clientOrderForm) {
+        clientOrderForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById("reqName")?.value || "",
+                phone: document.getElementById("reqPhone")?.value || "",
+                type: document.getElementById("reqType")?.value || "",
+                qty: document.getElementById("reqQty")?.value || "",
+                governorate: document.getElementById("reqGovernorate")?.value || "",
+                address: document.getElementById("reqAddress")?.value || "",
+                date: new Date().toLocaleString('ar-EG')
+            };
+
+            db.ref('orders').push(payload).then(() => {
+                const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
+                    `*اسم العميل:* ${payload.name}%0A` +
+                    `*التليفون:* ${payload.phone}%0A` +
+                    `*النوع:* ${payload.type}%0A` +
+                    `*الكمية:* ${payload.qty} طوبة%0A` +
+                    `*المحافظة:* ${payload.governorate}%0A` +
+                    `*العنوان:* ${payload.address}`;
+
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+                showToast("تم تسجيل طلبك وتحويلك للواتساب ✨");
+                clientOrderForm.reset();
+            }).catch(err => alert("خطأ في حفظ الطلب: " + err.message));
+        });
     }
 }
 
-// 11. تسجيل الدخول للوحة التحكم
-document.getElementById("adminLoginForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const user = document.getElementById("adminUser").value;
-    const pass = document.getElementById("adminPass").value;
-
-    db.ref('adminCredentials').once('value').then(snapshot => {
-        const creds = snapshot.val() || { username: "admin", password: "123" };
-        if (user === creds.username && pass === creds.password) {
-            isAdminLoggedIn = true;
-            document.getElementById("adminLoginModal").style.display = "none";
-            document.getElementById("adminDashboard").style.display = "block";
-            showToast("تم تسجيل الدخول بنجاح بنجاح");
-            loadOrders();
-        } else {
-            alert("اسم المستخدم أو كلمة المرور غير صحيحة!");
-        }
-    });
-});
-
-// 12. إرسال الطلب وحفظه + تحويل للواتساب
-document.getElementById("clientOrderForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const payload = {
-        name: document.getElementById("reqName").value,
-        phone: document.getElementById("reqPhone").value,
-        type: document.getElementById("reqType").value,
-        qty: document.getElementById("reqQty").value,
-        governorate: document.getElementById("reqGovernorate").value,
-        address: document.getElementById("reqAddress").value,
-        total: document.getElementById("estimatedPrice")?.value || "حسب الاتفاق",
-        date: new Date().toLocaleString('ar-EG')
-    };
-
-    db.ref('orders').push(payload).then(() => {
-        const message = `*طلب توريد جديد من موقع العمار مصر 🧱*%0A%0A` +
-            `*اسم العميل:* ${payload.name}%0A` +
-            `*التليفون:* ${payload.phone}%0A` +
-            `*النوع:* ${payload.type}%0A` +
-            `*الكمية:* ${payload.qty} طوبة%0A` +
-            `*المحافظة:* ${payload.governorate}%0A` +
-            `*العنوان:* ${payload.address}%0A` +
-            `*الإجمالي التقديري:* ${payload.total}`;
-
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-        showToast("تم تسجيل طلبك بنجاح ✨");
-        e.target.reset();
-    });
-});
-
-// 13. عرض الطلبات للأدمن
-function loadOrders() {
-    db.ref('orders').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const ordersTable = document.getElementById("adminOrdersTable");
-        if (!ordersTable) return;
-        ordersTable.innerHTML = "";
-
-        if (data) {
-            Object.keys(data).forEach(key => {
-                const item = data[key];
-                ordersTable.innerHTML += `
-                    <tr>
-                        <td>${item.date}</td>
-                        <td>${item.name}</td>
-                        <td>${item.phone}</td>
-                        <td>${item.type} (${item.qty})</td>
-                        <td>${item.governorate} - ${item.address}</td>
-                        <td>${item.total}</td>
-                        <td><button onclick="deleteOrder('${key}')" class="btn-danger">حذف</button></td>
-                    </tr>`;
-            });
-        }
-    });
+// 7. دوال الحذف
+function deleteBrick(id) {
+    if (confirm("هل أنت تأكد من حذف هذا النوع؟")) {
+        db.ref(`bricks/${id}`).remove().then(() => showToast("تم الحذف بنجاح"));
+    }
 }
 
-function deleteOrder(id) {
-    if (confirm("حذف هذا الطلب؟")) {
-        db.ref(`orders/${id}`).remove();
+function deleteGovernorate(id) {
+    if (confirm("هل أنت تأكد من حذف هذه المحافظة؟")) {
+        db.ref(`governorates/${id}`).remove().then(() => showToast("تم الحذف بنجاح"));
     }
 }
